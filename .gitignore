@@ -1,0 +1,20 @@
+### Ruby template
+*.gem
+*.rbc
+/coverage/
+/spec/reports/
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalisation:
+/.bundle/
+/lib/bundler/man/
+.idea/
+
+## Gemfile for development
+#Gemfile
+#Gemfile.lock
