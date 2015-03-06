@@ -8,10 +8,14 @@ Gem::Specification.new do |s|
   s.email       = 'courtland@mattermark.com'
   s.files       = [
       "lib/msfl.rb",
+      "lib/parsers.rb",
+      "lib/types.rb",
+      "lib/parsers/json.rb",
+      "lib/types/set.rb"
   ]
   s.homepage    =
       'https://github.com/caldwecr/msfl'
-  #s.add_runtime_dependency
+  s.add_runtime_dependency "json", "~> 1.7"
   s.add_development_dependency "rake", "~> 10.3"
   s.add_development_dependency "simplecov", "~> 0.9"
   s.add_development_dependency "yard", "~> 0.8"
