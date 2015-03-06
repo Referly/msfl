@@ -12,10 +12,10 @@ Gem::Specification.new do |s|
   s.homepage    =
       'https://github.com/caldwecr/msfl'
   #s.add_runtime_dependency
-  s.add_development_dependency "rake"
+  s.add_development_dependency "rake", "~> 10.3"
   s.add_development_dependency "simplecov", "~> 0.9"
-  s.add_development_dependency "yard"
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "byebug"
+  s.add_development_dependency "yard", "~> 0.8"
+  s.add_development_dependency "rspec", "~> 3.1"
+  s.add_development_dependency "byebug", "~> 3.5"
   s.license     = "MIT"
 end
