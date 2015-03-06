@@ -31,6 +31,17 @@ describe "MSFL::Parsers::JSON" do
 
     let(:arg) { Object.new }
 
+    [55, "five", :fourty, nil].each do |item|
+      context "when the argument is a #{item.class}" do
+
+        let(:arg) { item }
+
+        it "is equal to the argument" do
+          expect(mut).to eq arg
+        end
+      end
+    end
+
     context "when the argument is a Hash" do
 
       context "when the hash's values are scalars" do
@@ -53,28 +64,46 @@ describe "MSFL::Parsers::JSON" do
         end
       end
 
-      context "when the hash's values include at one Array" do
+      context "when the hash's values include at least one Array" do
 
         let(:arg) do
-          { foo: ["bar", "baz"], abc: 123 }
+          { inner_array: array_in_arg, abc: 123 }
         end
 
         let(:expected) do
-          { foo: MSFL::Types::Set.new(["bar", "baz"]), abc: 123 }
+          { inner_array: MSFL::Types::Set.new(array_in_arg), abc: 123 }
         end
+
+        let(:array_in_arg) { ["bar", "baz"] }
 
         it "is the argument with the Array converted to a MSFL::Types::Set" do
           expect(mut).to eq expected
+        end
+
+        context "when at least one included Array has a duplicate item" do
+
+          let(:array_in_arg) { ["cat", "cat", 44, 55, "dog", 44, :marco, :polo, nil, :polo, "cat", nil] }
+
+          it "includes the duplicate item(s) exactly once" do
+            expect(mut[:inner_array]).to eq MSFL::Types::Set.new(["cat", 44, 55, "dog", :marco, :polo, nil])
+          end
         end
       end
     end
 
     context "when the argument is an Array" do
 
-      let(:arg) { Array.new }
+      let(:arg) { [:foo, "bar", nil, 99, "bar"] }
 
       it { is_expected.to be_a MSFL::Types::Set }
 
+      it "is unordered" do
+        expect(mut).to eq MSFL::Types::Set.new(arg.shuffle)
+      end
+
+      it "is deduplicated" do
+        expect(mut).to eq MSFL::Types::Set.new([:foo, "bar", nil, 99])
+      end
 
       context "when the array's values are scalars" do
 
