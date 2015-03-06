@@ -5,13 +5,7 @@ module MSFL
       def self.parse(json)
         obj = ::JSON.parse(json)
         obj = arrays_to_sets obj
-        # arrays_to_sets! obj
         obj
-      end
-
-      # I don't work yet
-      def self.arrays_to_sets!(obj)
-        obj = arrays_to_sets obj
       end
 
       def self.arrays_to_sets(obj)
