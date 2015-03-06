@@ -1,0 +1,9 @@
+machine:
+
+  timezone:
+    America/Los_Angeles # Set the timezone
+
+  # Version of ruby to use
+  ruby:
+    version:
+      2.1.3
