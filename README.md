@@ -1,4 +1,4 @@
-Build status: [![Circle CI](https://circleci.com/gh/caldwecr/msfl.svg?style=svg)](https://circleci.com/gh/caldwecr/msfl)
+[![Circle CI](https://circleci.com/gh/caldwecr/msfl.svg?style=svg)](https://circleci.com/gh/caldwecr/msfl)
 
 # Ruby Mattermark Semantic Filter Language Gem
 
