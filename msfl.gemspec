@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'msfl'
-  s.version     = '0.0.1-dev'
+  s.version     = '0.0.1-qa'
   s.date        = '2015-03-05'
   s.summary     = "MSFL in Ruby"
   s.description = "Serializers, validators, and other tasty goodness for the Mattermark Semantic Filter Language in Ruby."
@@ -9,12 +9,14 @@ Gem::Specification.new do |s|
   s.files       = [
       "lib/msfl.rb",
 
+      "lib/msfl/configuration.rb",
       "lib/msfl/datasets.rb",
       "lib/msfl/parsers.rb",
       "lib/msfl/types.rb",
       "lib/msfl/validators.rb",
 
-      "lib/msfl/datasets/investors.rb",
+      "lib/msfl/datasets/base.rb",
+      "lib/msfl/datasets/movies.rb",
 
       "lib/msfl/parsers/json.rb",
 
@@ -25,7 +27,7 @@ Gem::Specification.new do |s|
 
       "lib/msfl/validators/definitions/hash_key.rb",
 
-      "lib/types/set.rb"
+
   ]
   s.homepage    =
       'https://github.com/caldwecr/msfl'
