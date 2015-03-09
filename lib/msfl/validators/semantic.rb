@@ -12,11 +12,17 @@ module MSFL
       ENUMERATION_OPERATORS = [:in]
 
       # Used for creating new semantic validator instances
-      # The instance's dataset will default to the first value in MSFL.configuration.datasets, unless it is empty,
+      #
+      # If the dataset argument is specified it will be used as the dataset for the validator. Otherwise
+      # the instance's dataset will default to the first value in MSFL.configuration.datasets, unless it is empty,
       # in which case it will revert to MSFL::Datasets::Base, which will deliberately break execution when #validate
       # is called on the validator instance, raising a NoMethodError.
-      def initialize
-        @dataset = MSFL.configuration.datasets.first.new unless MSFL.configuration.datasets.empty?
+      #
+      # @param dataset [MSFL::Dataset::Base] optionally override the dataset instance that should be used by the validator
+      # @param opts [Hash] optional; currently not used, included for future additions
+      def initialize(dataset = nil, opts = {})
+        @dataset = dataset unless dataset.nil?
+        @dataset ||= MSFL.configuration.datasets.first.new unless MSFL.configuration.datasets.empty?
         @dataset ||= Datasets::Base.new
         @current_field = nil
         @current_operator = nil
