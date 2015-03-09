@@ -13,6 +13,7 @@ module MSFL
 
       def initialize(attributes = nil, opts = {})
         @dataset = attributes[:dataset].to_sym if attributes.respond_to?(:dataset)
+        @dataset ||= Datasets::Base.new
         @current_field = nil
         @current_operator = nil
       end
