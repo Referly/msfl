@@ -6,29 +6,8 @@ Gem::Specification.new do |s|
   s.description = "Serializers, validators, and other tasty goodness for the Mattermark Semantic Filter Language in Ruby."
   s.authors     = ["Courtland Caldwell"]
   s.email       = 'courtland@mattermark.com'
-  s.files       = [
-      "lib/msfl.rb",
-
-      "lib/msfl/configuration.rb",
-      "lib/msfl/datasets.rb",
-      "lib/msfl/parsers.rb",
-      "lib/msfl/types.rb",
-      "lib/msfl/validators.rb",
-
-      "lib/msfl/datasets/base.rb",
-      "lib/msfl/datasets/movies.rb",
-
-      "lib/msfl/parsers/json.rb",
-
-      "lib/msfl/types/set.rb",
-
-      "lib/msfl/validators/definitions.rb",
-      "lib/msfl/validators/semantic.rb",
-
-      "lib/msfl/validators/definitions/hash_key.rb",
-
-
-  ]
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.homepage    =
       'https://github.com/caldwecr/msfl'
   s.add_runtime_dependency "json", "~> 1.7"
