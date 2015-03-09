@@ -12,7 +12,8 @@ module MSFL
       ENUMERATION_OPERATORS = [:in]
 
       def initialize(attributes = nil, opts = {})
-        @dataset ||= ::MSFL.configuration.datasets.first.new
+        @dataset = MSFL.configuration.datasets.first.new unless MSFL.configuration.datasets.empty?
+        @dataset ||= Datasets::Base.new
         @current_field = nil
         @current_operator = nil
       end
