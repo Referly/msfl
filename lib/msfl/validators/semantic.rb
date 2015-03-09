@@ -1,15 +1,10 @@
 require_relative 'definitions'
-require_relative 'datasets'
 
 module MSFL
   module Validators
     class Semantic
       # Load definitions
       include Definitions::HashKey
-
-      # Load dataset specific validations
-      include Datasets::Investors
-
 
       attr_accessor :dataset, :fields, :errors, :current_field, :current_operator
 
