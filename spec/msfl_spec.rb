@@ -32,10 +32,6 @@ describe "MSFL" do
     }'
   end
 
-  let(:invalid_json_encoded_msfl) do
-    '{ "not_a_field_in_dataset": "foobar" }'
-  end
-
   let(:invalid_ruby_encoded_msfl) do
     { not_a_field_in_dataset: "foobar" }
   end
@@ -90,8 +86,6 @@ describe "MSFL" do
 
   it "accepts valid MSFL filters" do
     MSFL.configure(reset: true) { |conf| conf.datasets = [MSFL::Datasets::Movies] }
-    # byebug
     expect(validator.validate ruby_encoded_msfl).to be true
   end
-
 end
