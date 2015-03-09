@@ -8,9 +8,23 @@ Gem::Specification.new do |s|
   s.email       = 'courtland@mattermark.com'
   s.files       = [
       "lib/msfl.rb",
-      "lib/parsers.rb",
-      "lib/types.rb",
-      "lib/parsers/json.rb",
+
+      "lib/msfl/parsers.rb",
+      "lib/msfl/types.rb",
+      "lib/msfl/validators.rb",
+
+      "lib/msfl/parsers/json.rb",
+
+      "lib/msfl/types/set.rb",
+
+      "lib/msfl/validators/datasets.rb",
+      "lib/msfl/validators/definitions.rb",
+      "lib/msfl/validators/semantic.rb",
+
+      "lib/msfl/validators/datasets/investors.rb",
+
+      "lib/msfl/validators/definitions/hash_key.rb",
+
       "lib/types/set.rb"
   ]
   s.homepage    =
