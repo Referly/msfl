@@ -1,6 +1,45 @@
 require 'spec_helper'
 
 describe "MSFL::Validators::Semantic" do
+
+  describe "#initialize" do
+
+    subject(:mut) { MSFL::Validators::Semantic.new dataset }
+
+    let(:dataset) { nil }
+
+    context "when the dataset argument is specified" do
+
+      let(:dataset) { Object.new }
+
+      it "has the dataset argument's value as the dataset" do
+        expect(mut.dataset).to be dataset
+      end
+    end
+
+    context "when the dataset argument is not specified" do
+
+      context "when MSFL is configured for one or more datasets" do
+
+        before { MSFL.configure(reset: true) { |configuration| configuration.datasets = [MSFL::Datasets::Movies] } }
+
+        it "has an instance of the first item in MSFL.configuration.datasets (an instance of Class) as the dataset" do
+          expect(mut.dataset).to be_a MSFL::Datasets::Movies
+        end
+      end
+
+      context "when MSFL is not configured for any datasets" do
+
+        before { MSFL.configure(reset: true) }
+
+        it "has an instance of MSFL::Datasets::Base as the dataset" do
+          expect(mut.dataset).to be_a MSFL::Datasets::Base
+        end
+      end
+    end
+
+  end
+
   describe "#validate_set" do
 
     subject(:mut) { test_instance.validate_set set, errors, options }
