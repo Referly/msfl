@@ -11,7 +11,11 @@ module MSFL
       BOOLEAN_OPERATORS = [:and, :or]
       ENUMERATION_OPERATORS = [:in]
 
-      def initialize(attributes = nil, opts = {})
+      # Used for creating new semantic validator instances
+      # The instance's dataset will default to the first value in MSFL.configuration.datasets, unless it is empty,
+      # in which case it will revert to MSFL::Datasets::Base, which will deliberately break execution when #validate
+      # is called on the validator instance, raising a NoMethodError.
+      def initialize
         @dataset = MSFL.configuration.datasets.first.new unless MSFL.configuration.datasets.empty?
         @dataset ||= Datasets::Base.new
         @current_field = nil
