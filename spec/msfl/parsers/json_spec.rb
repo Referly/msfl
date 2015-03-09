@@ -12,7 +12,7 @@ describe "MSFL::Parsers::JSON" do
     context "when parsing a json hash" do
 
       it "is an equivalent Ruby Hash" do
-        expect(mut).to eq({ "total_funding" => 5000000 })
+        expect(mut).to eq({ :total_funding => 5000000 })
       end
     end
 
