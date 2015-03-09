@@ -6,7 +6,7 @@ module MSFL
     #  msfl
     class Movies < ::MSFL::Datasets::Base
       def fields
-        [:title, :rating, :description]
+        [:title, :rating, :description, :earnings]
       end
     end
   end

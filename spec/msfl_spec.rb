@@ -8,23 +8,23 @@ describe "MSFL" do
           {
               "and": [
                   {
-                      "investors": {
+                      "title": {
                           "in": [
-                              "a16z",
-                              "Sequoia",
-                              "nea"
+                              "Frozen",
+                              "Big Hero 6",
+                              "Apollo 13"
                           ]
                       }
                   },
                   {
-                      "last_funding_date": {
-                          "gte": "2001-01-25"
+                      "rating": {
+                          "gte": "PG"
                       }
                   }
               ]
           },
           {
-              "total_funding": {
+              "earnings": {
                   "lt": 5000000
               }
           }
@@ -38,31 +38,31 @@ describe "MSFL" do
 
   let(:ruby_encoded_msfl) do
     {
-        or: [
+        or: MSFL::Types::Set.new([
             {
-                and: [
+                and: MSFL::Types::Set.new([
                     {
-                        investors: {
-                            in: [
-                                "a16z",
-                                "Sequoia",
-                                "nea"
-                            ]
+                        title: {
+                            in: MSFL::Types::Set.new([
+                                "Frozen",
+                                "Big Hero 6",
+                                "Apollo 13"
+                            ])
                         }
                     },
                     {
-                        last_funding_date: {
-                            gte: "2001-01-25"
+                        rating: {
+                            gte: "PG"
                         }
                     }
-                ]
+                ])
             },
             {
-                total_funding: {
+                earnings: {
                     lt: 5000000
                 }
             }
-        ]
+        ])
     }
   end
 

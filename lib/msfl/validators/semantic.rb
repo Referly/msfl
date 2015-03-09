@@ -64,10 +64,12 @@ module MSFL
           #
           if operators.include? key
             dataset.validate_operator_conforms key, current_field, errors
+            opts[:parent_operator] = key
           elsif dataset.fields.include? key
             current_field = key
             dataset.validate_type_conforms value, current_field, errors
             dataset.validate_value_conforms value, current_field, errors
+            opts[:parent_field] = current_field
           else
             errors << "Encountered hash key that is neither an operator nor a property of the dataset"
           end
@@ -132,11 +134,19 @@ module MSFL
 
       def recursive_validate(obj, errors, opts)
         # store a copy of parent_operator and parent_field to restore after recursion
+        parent_operator = opts[:parent_operator] if opts.has_key?(:parent_operator)
+        parent_operator ||= nil
+        parent_field = opts[:parent_field] if opts.has_key?(:parent_field)
+        parent_field ||= nil
         if obj.is_a?(Hash)
           validate_hash obj, errors, opts
         elsif obj.is_a?(Types::Set)
           validate_set obj, errors, opts
         end
+        opts.delete :parent_operator
+        opts[:parent_operator] = parent_operator unless parent_operator.nil?
+        opts.delete :parent_field
+        opts[:parent_field] = parent_field unless parent_field.nil?
         errors
       end
     end
