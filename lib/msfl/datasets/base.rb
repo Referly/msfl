@@ -3,7 +3,7 @@ module MSFL
     # This is a fake data set definition that shows the structure for composing your own
     class Base
 
-      #
+      # Method not implemented at this time
       #
       # @param obj [Object] the object that should be type checked based on the property argument
       # @param property [Symbol] which property should the object be checked for conformity
@@ -15,19 +15,19 @@ module MSFL
       #    # because the type of total_funding must be an integer
       #
       def validate_type_conforms(obj, property, errors)
-        errors << "Type of #{obj} does not conform to #{property}" unless type_conforms?(obj, property)
         errors
       end
 
+      # Method not implemented at this time
       # Returns true if the object conforms to the types supported by the indicated property
       #
       # @param obj [Object] the object that should be type checked based on the property argument
       # @param property [Symbol] which property should the object be checked for conformity
       def type_conforms?(obj, property)
-        field_type_map[property.to_sym].each { |permitted_type| return true if obj.is_a?(permitted_type) }
-        false
+        true
       end
 
+      # Method not implemented at this time
       #
       #
       # @param operator [Symbol] the operator that we want to know if the particular property supports it
@@ -38,6 +38,7 @@ module MSFL
         errors
       end
 
+      # Method not implemented at this time
       #
       #
       # @param value [Object] the precoerced value (the value must be correctly typed)
@@ -56,7 +57,6 @@ module MSFL
       #  foo.investors_value_conforms(12345, :total_funding) => # errors is unchanged
       #
       def validate_value_conforms(value, property, errors)
-        raise ArgumentError, "Value must be coerced to type of #{property} before the value can be validated." unless investors_type_conforms?(value, property)
         errors
       end
     end
