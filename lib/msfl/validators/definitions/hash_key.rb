@@ -3,7 +3,7 @@ module MSFL
     module Definitions
       module HashKey
         def hash_key
-          { in: [operators, fields]}
+          { in: [operators, self.dataset.fields]}
         end
 
         # Operators still needing parsing: ellipsis2, tilda

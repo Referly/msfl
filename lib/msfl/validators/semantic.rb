@@ -6,14 +6,13 @@ module MSFL
       # Load definitions
       include Definitions::HashKey
 
-      attr_accessor :dataset, :fields, :errors, :current_field, :current_operator
+      attr_accessor :dataset, :errors, :current_field, :current_operator
 
       BOOLEAN_OPERATORS = [:and, :or]
       ENUMERATION_OPERATORS = [:in]
 
       def initialize(attributes = nil, opts = {})
-        @dataset = attributes[:dataset].to_sym if attributes.respond_to?(:dataset)
-        @dataset ||= Datasets::Base.new
+        @dataset ||= ::MSFL.configuration.datasets.first.new
         @current_field = nil
         @current_operator = nil
       end
@@ -28,8 +27,12 @@ module MSFL
       # @param errors [Array] optionally provide an array that contains errors from previous validators in the
       #  validation chain
       def validate(hash, errors = [], opts = {})
-        errors << "Object to validate must be a Hash" unless obj.is_a?(Hash)
+        errors << "Object to validate must be a Hash" unless hash.is_a?(Hash)
         recursive_validate hash, errors, opts
+        @errors = errors
+        result = true if @errors.empty?
+        result ||= false
+        result
       end
 
       # Returns the result of merging errors with any newly encountered errors found in validating the hash
@@ -46,6 +49,8 @@ module MSFL
           key = k.to_sym
           # validate the current hash key
 
+          # validate that the hash key is supported as an operator or dataset field
+
           # if they key is an operator validate the dataset supports the operator for the current field
           #
           # if the key is a field of the dataset then we need to validate that the _value_ conforms to the dataset
@@ -57,13 +62,13 @@ module MSFL
           #  later I might be able to optimize this by only making the recursive call for Sets and Hashes
           #
           if operators.include? key
-            send("#{@dataset}_validate_operator_conforms", key, current_field, errors)
-          elsif fields.include? key
+            dataset.validate_operator_conforms key, current_field, errors
+          elsif dataset.fields.include? key
             current_field = key
-            send("#{@dataset}_validate_type_conforms", value, current_field, errors)
-            send("#{@dataset}_validate_value_conforms", value, current_field, errors)
+            dataset.validate_type_conforms value, current_field, errors
+            dataset.validate_value_conforms value, current_field, errors
           else
-            raise ArgumentError, "Encountered hash key that is neither an operator nor a property of the dataset"
+            errors << "Encountered hash key that is neither an operator nor a property of the dataset"
           end
           recursive_validate value, errors, opts
         end
@@ -116,8 +121,8 @@ module MSFL
         set.each do |value|
           # this isn't quite right, it feels dirty to use :each
           errors << "No members of an enumeration set may permit iteration across itself" if value.respond_to?(:each)
-          send("#{@dataset}_validate_type_conforms", value, current_field, errors)
-          send("#{@dataset}_validate_value_conforms", value, current_field, errors)
+          dataset.validate_type_conforms value, current_field, errors
+          dataset.validate_value_conforms value, current_field, errors
         end
         errors
       end

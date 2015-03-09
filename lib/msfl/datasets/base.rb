@@ -1,7 +1,13 @@
 module MSFL
   module Datasets
-    # This is a fake data set definition that shows the structure for composing your own
     class Base
+
+      # The descendant class should override this method
+      #
+      # @return [Array] the fields in the dataset
+      def fields
+        []
+      end
 
       # Method not implemented at this time
       #

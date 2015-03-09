@@ -11,10 +11,16 @@ module MSFL
       def self.arrays_to_sets(obj)
         obj = ::MSFL::Types::Set.new obj if obj.is_a?(::Array)
         if obj.respond_to? :each
-          obj.each { |key, val| obj[key] = arrays_to_sets val } if obj.is_a?(::Hash)
-          obj.map! { |value| arrays_to_sets value } if obj.is_a?(::MSFL::Types::Set)
+          if obj.is_a?(::Hash)
+            result = {}
+            obj.each { |key, val| result[key.to_sym] = arrays_to_sets val }
+          elsif obj.is_a?(::MSFL::Types::Set)
+            result = []
+            result = obj.map { |value| arrays_to_sets value }
+          end
         end
-        obj
+        result ||= obj
+        result
       end
     end
   end
