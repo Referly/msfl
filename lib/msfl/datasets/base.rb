@@ -2,11 +2,20 @@ module MSFL
   module Datasets
     class Base
 
-      # The descendant class should override this method
+      include Validators::Definitions::HashKey
+
+      # The descendant class MUST override this method otherwise all field validations will fail
       #
       # @return [Array] the fields in the dataset
       def fields
         []
+      end
+
+      # The descendant class may override this method to control the operators that are supported for the dataset
+      #  - Note that this can only be used to reduce the number of supported operators (you can't add new operators
+      #    here, without first adding them to MSFL::Validators::Definitions::HashKey#hash_key_operators)
+      def operators
+        hash_key_operators
       end
 
       # Method not implemented at this time

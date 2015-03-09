@@ -48,7 +48,8 @@ module MSFL
         # validate the keys and values
         hash.each do |k, value|
           key = k.to_sym
-          # validate the current hash key
+          # validate the current hash key using broad hash key validation
+          errors << "Hash key encountered that is broadly invalid." unless valid_hash_key?(key)
 
           # validate that the hash key is supported as an operator or dataset field
 
@@ -62,7 +63,7 @@ module MSFL
           # Then make a recursive call to validate on the value so that it and its elements are validated
           #  later I might be able to optimize this by only making the recursive call for Sets and Hashes
           #
-          if operators.include? key
+          if dataset.operators.include? key
             dataset.validate_operator_conforms key, current_field, errors
             opts[:parent_operator] = key
           elsif dataset.fields.include? key

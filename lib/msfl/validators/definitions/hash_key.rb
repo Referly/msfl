@@ -2,12 +2,17 @@ module MSFL
   module Validators
     module Definitions
       module HashKey
-        def hash_key
-          { in: [operators, self.dataset.fields]}
+
+        def valid_hash_key?(key)
+          valid_hash_keys.include? key
+        end
+
+        def valid_hash_keys
+          hash_key_operators.concat self.dataset.fields
         end
 
         # Operators still needing parsing: ellipsis2, tilda
-        def operators
+        def hash_key_operators
           [
               :and,         # logical AND
               :or,          # logical OR
