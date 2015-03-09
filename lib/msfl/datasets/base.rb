@@ -8,7 +8,7 @@ module MSFL
       #
       # @return [Array] the fields in the dataset
       def fields
-        []
+        raise NoMethodError, "Descendants of MSFL::Datasets::Base are required to implement the #fields method"
       end
 
       # The descendant class may override this method to control the operators that are supported for the dataset
@@ -20,8 +20,8 @@ module MSFL
 
       # Method not implemented at this time
       #
-      # @param obj [Object] the object that should be type checked based on the property argument
-      # @param property [Symbol] which property should the object be checked for conformity
+      # @param obj [Object] the object that should be type checked based on the field argument
+      # @param field [Symbol] which field should the object be checked for conformity
       # @param errors [Array] an array of validation errors - empty indicates that no errors have been encountered
       # @return [Array] errors merged with any validation errors encountered in validating the set
       #
@@ -29,27 +29,27 @@ module MSFL
       #  foo.investors_validate_type_conforms("abc", :total_funding) => # there is one more error in errors
       #    # because the type of total_funding must be an integer
       #
-      def validate_type_conforms(obj, property, errors)
+      def validate_type_conforms(obj, field, errors)
         errors
       end
 
       # Method not implemented at this time
-      # Returns true if the object conforms to the types supported by the indicated property
+      # Returns true if the object conforms to the types supported by the indicated field
       #
-      # @param obj [Object] the object that should be type checked based on the property argument
-      # @param property [Symbol] which property should the object be checked for conformity
-      def type_conforms?(obj, property)
+      # @param obj [Object] the object that should be type checked based on the field argument
+      # @param field [Symbol] which field should the object be checked for conformity
+      def type_conforms?(obj, field)
         true
       end
 
       # Method not implemented at this time
       #
       #
-      # @param operator [Symbol] the operator that we want to know if the particular property supports it
-      # @param property [Symbol] which property should the operator be checked for conformity
+      # @param operator [Symbol] the operator that we want to know if the particular field supports it
+      # @param field [Symbol] which field should the operator be checked for conformity
       # @param errors [Array] an array of validation errors - empty indicates that no errors have been encountered
       # @return [Array] errors merged with any validation errors encountered in validating the set
-      def validate_operator_conforms(operator, property, errors)
+      def validate_operator_conforms(operator, field, errors)
         errors
       end
 
@@ -57,9 +57,9 @@ module MSFL
       #
       #
       # @param value [Object] the precoerced value (the value must be correctly typed)
-      #     that should be checked for validity based on the property, if the value does not conform an
+      #     that should be checked for validity based on the field, if the value does not conform an
       #     exception will be raised
-      # @param property [Symbol] which property should the value be checked for conformity
+      # @param field [Symbol] which field should the value be checked for conformity
       # @param errors [Array] an array of validation errors - empty indicates that no errors have been encountered
       # @return [Array] errors merged with any validation errors encountered in validating the set
       #
@@ -71,7 +71,7 @@ module MSFL
       # @example:
       #  foo.investors_value_conforms(12345, :total_funding) => # errors is unchanged
       #
-      def validate_value_conforms(value, property, errors)
+      def validate_value_conforms(value, field, errors)
         errors
       end
     end
