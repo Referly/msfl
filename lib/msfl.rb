@@ -3,6 +3,7 @@ require 'msfl/types'
 require 'msfl/validators'
 require 'msfl/configuration'
 require 'msfl/datasets'
+require 'msfl/sinatra'
 
 module MSFL
   class << self
