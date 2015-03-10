@@ -40,6 +40,23 @@ describe "MSFL::Validators::Semantic" do
 
   end
 
+  describe "#validate" do
+
+    subject(:mut) { test_instance.validate hash, errors, options }
+
+    let(:test_instance) { MSFL::Validators::Semantic.new }
+
+    let(:hash) { {} }
+
+    let(:errors) { [] }
+
+    let(:options) { {} }
+
+    context "when the filter is empty" do
+      it { is_expected.to be true }
+    end
+  end
+
   describe "#validate_set" do
 
     subject(:mut) { test_instance.validate_set set, errors, options }

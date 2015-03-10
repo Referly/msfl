@@ -14,7 +14,7 @@ module MSFL
       # @return [Object] the Ruby-ified MSFL filter
       def parse_filter_from(params)
         filter = params[:filter]
-        MSFL::Parsers::JSON.parse filter.to_json unless filter.nil?
+        MSFL::Parsers::JSON.parse filter.to_json
       end
 
       # Extracts the dataset name from the Sinatra params. It then returns a new instance of the specified

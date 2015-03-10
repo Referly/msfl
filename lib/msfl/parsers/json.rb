@@ -8,7 +8,9 @@ module MSFL
       # @param json [String] the string to parse
       # @return [Object] the Ruby encoded MSFL, which may be a Hash, MSFL::Types::Set, or any number of scalar types
       def self.parse(json)
-        obj = ::JSON.parse(json)
+        json_to_parse = json
+        json_to_parse = '{}' if json_to_parse.nil? || json_to_parse == "" || json_to_parse == "null"
+        obj = ::JSON.parse(json_to_parse)
         obj = arrays_to_sets obj
         obj
       end

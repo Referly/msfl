@@ -69,13 +69,6 @@ describe "MSFL::Sinatra::Helpers" do
         end
       end
 
-      context "when params[:filter] is nil" do
-
-        it "raises an ArgumentError" do
-          expect { mut }.to raise_error ArgumentError
-        end
-      end
-
       context "when params[:dataset] is a valid Dataset" do
 
         let(:dataset) { :cars }

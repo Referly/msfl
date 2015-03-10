@@ -9,6 +9,17 @@ describe "MSFL::Parsers::JSON" do
 
     let(:test_json) { '{"total_funding": 5000000}' }
 
+    context "when parsing an empty json string" do
+
+      let(:test_json) { '' }
+
+      let(:expected) { MSFL::Parsers::JSON.parse '{}' }
+
+      it "is parsed as an empty json hash" do
+        expect(mut).to eq expected
+      end
+    end
+
     context "when parsing a json hash" do
 
       it "is an equivalent Ruby Hash" do

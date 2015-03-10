@@ -2,6 +2,24 @@ shared_examples_for "an invocation of MSFL::Sinatra.validate" do
 
   let(:params) { { dataset: dataset, filter: filter } }
 
+  context "when params[:filter] is nil" do
+
+    let(:filter) { nil }
+
+    let(:dataset) { nil }
+
+    it { is_expected.to be true }
+  end
+
+  context "when params[:filter] is an empty hash" do
+
+    let(:filter) { {} }
+
+    let(:dataset) { nil }
+
+    it { is_expected.to be true }
+  end
+
   context "when params[:dataset] is :movies" do
 
     let(:dataset) { :movies }
