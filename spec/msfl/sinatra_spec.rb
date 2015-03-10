@@ -3,6 +3,20 @@ require 'spec_helper'
 
 describe "MSFL::Sinatra" do
 
+  describe ".registered" do
+
+    let(:app) do
+      o = Object.new
+      allow(o).to receive :helpers
+      expect(o).to receive(:helpers).once
+      o
+    end
+
+    it "adds the methods in the Helpers module as helpers to a Sinatra application" do
+      MSFL::Sinatra.registered app
+    end
+  end
+
   describe ".parse_filter_from" do
 
     subject(:mut) { MSFL::Sinatra.parse_filter_from params }

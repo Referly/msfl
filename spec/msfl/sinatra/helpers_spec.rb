@@ -19,7 +19,7 @@ describe "MSFL::Sinatra::Helpers" do
 
     subject(:mut) { sinatra_app.msfl_valid? params }
 
-    # it_behaves_like "an invocation of MSFL::Sinatra.validate"
+    it_behaves_like "an invocation of MSFL::Sinatra.validate"
   end
 
   describe "#msfl_filter" do
@@ -60,10 +60,6 @@ describe "MSFL::Sinatra::Helpers" do
         end
       end
 
-      context "when params[:dataset] does not correspond to a registerd MSFL::Dataset" do
-
-      end
-
       context "when params[:filter] is not valid json" do
 
         let(:filter) { "iamnotvalidjson" }
@@ -82,15 +78,15 @@ describe "MSFL::Sinatra::Helpers" do
 
       context "when params[:dataset] is a valid Dataset" do
 
-        let(:dataset) { :movies }
+        let(:dataset) { :cars }
 
         context "when params[:filter] is a valid MSFL filter" do
 
-          let(:filter) { { title: { in: inner_array } } }
+          let(:filter) { { make: { in: inner_array } } }
 
-          let(:inner_array) { ["Shrek", "Harry Potter"] }
+          let(:inner_array) { ["Chevy", "Tesla"] }
 
-          let(:msfl_filter) { { title: { in: MSFL::Types::Set.new(inner_array) } } }
+          let(:msfl_filter) { { make: { in: MSFL::Types::Set.new(inner_array) } } }
 
           it "is the valid MSFL filter" do
             expect(mut).to eq msfl_filter
