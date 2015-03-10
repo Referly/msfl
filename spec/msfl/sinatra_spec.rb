@@ -1,6 +1,5 @@
 require 'spec_helper'
-require_relative '../../lib/msfl/datasets/movies'
-require_relative '../../lib/msfl/datasets/cars'
+
 
 describe "MSFL::Sinatra" do
 
@@ -77,30 +76,8 @@ describe "MSFL::Sinatra" do
 
     subject(:mut) { MSFL::Sinatra.validate params }
 
-    let(:params) { { dataset: dataset, filter: filter } }
+    let(:params) { nil }
 
-    let(:dataset) { nil }
-
-    let(:filter) { nil }
-
-    context "when params[:dataset] is :movies" do
-
-      let(:dataset) { :movies }
-
-      context "when params[:filter] is a valid filter" do
-
-        let(:filter) { { title: "Gone with the wind" } }
-
-        it { is_expected.to be true }
-      end
-
-      context "when params[:filter] is an invalid filter" do
-
-        let(:filter) { { notavalidfield: "some arbitrary value" } }
-
-        it { is_expected.to be false }
-      end
-    end
-
+    it_behaves_like "an invocation of MSFL::Sinatra.validate"
   end
 end

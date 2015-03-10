@@ -25,7 +25,8 @@ module MSFL
       # @param params [Hash] the Sinatra request params
       # @return [MSFL::Datasets::Base, Nil] a new instance of the specified dataset, if it can be found, otherwise nil
       def dataset_from(params)
-        dataset_name = params[:dataset].to_sym
+        dataset_name = params[:dataset].to_sym unless params[:dataset].nil?
+        dataset_name ||= nil
         Datasets::Base.registered_datasets[dataset_name].new if Datasets::Base.registered_datasets.has_key?(dataset_name)
       end
 
