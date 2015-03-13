@@ -1,9 +1,9 @@
-require 'msfl/parsers'
-require 'msfl/types'
-require 'msfl/validators'
-require 'msfl/configuration'
-require 'msfl/datasets'
-require 'msfl/sinatra'
+require_relative 'msfl/parsers'
+require_relative 'msfl/types'
+require_relative 'msfl/validators'
+require_relative 'msfl/configuration'
+require_relative 'msfl/datasets'
+require_relative 'msfl/sinatra'
 
 module MSFL
   class << self

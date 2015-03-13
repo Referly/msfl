@@ -1,3 +1,4 @@
+require 'json'
 module MSFL
   module Sinatra
     class << self
@@ -13,8 +14,9 @@ module MSFL
       # @param params [Hash] the Sinatra request params
       # @return [Object] the Ruby-ified MSFL filter
       def parse_filter_from(params)
-        filter = params[:filter]
-        MSFL::Parsers::JSON.parse filter.to_json
+        filter = params[:filter] || params["filter"]
+        filter = filter.to_json if filter.is_a?(Hash) #normally it's a string
+        MSFL::Parsers::JSON.parse filter
       end
 
       # Extracts the dataset name from the Sinatra params. It then returns a new instance of the specified
