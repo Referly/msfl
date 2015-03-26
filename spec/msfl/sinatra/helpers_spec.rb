@@ -71,7 +71,7 @@ describe "MSFL::Sinatra::Helpers" do
 
       context "when params[:dataset] is a valid Dataset" do
 
-        let(:dataset) { :cars }
+        let(:dataset) { :car }
 
         context "when params[:filter] is a valid MSFL filter" do
 

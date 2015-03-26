@@ -21,10 +21,10 @@ describe "MSFL::Validators::Semantic" do
 
       context "when MSFL is configured for one or more datasets" do
 
-        before { MSFL.configure(reset: true) { |configuration| configuration.datasets = [MSFL::Datasets::Movies] } }
+        before { MSFL.configure(reset: true) { |configuration| configuration.datasets = [MSFL::Datasets::Movie] } }
 
         it "has an instance of the first item in MSFL.configuration.datasets (an instance of Class) as the dataset" do
-          expect(mut.dataset).to be_a MSFL::Datasets::Movies
+          expect(mut.dataset).to be_a MSFL::Datasets::Movie
         end
       end
 

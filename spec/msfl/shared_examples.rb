@@ -20,9 +20,9 @@ shared_examples_for "an invocation of MSFL::Sinatra.validate" do
     it { is_expected.to be true }
   end
 
-  context "when params[:dataset] is :movies" do
+  context "when params[:dataset] is :movie" do
 
-    let(:dataset) { :movies }
+    let(:dataset) { :movie }
 
     context "when params[:filter] is a valid filter" do
 

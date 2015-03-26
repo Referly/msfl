@@ -47,21 +47,21 @@ describe "MSFL::Sinatra" do
 
     let(:dataset) { nil }
 
-    context "when params[:dataset] is :movies" do
+    context "when params[:dataset] is :movie" do
 
-      let(:dataset) { :movies }
+      let(:dataset) { :movie }
 
-      it "is a new instance of MSFL::Datasets::Movies" do
-        expect(mut).to be_a MSFL::Datasets::Movies
+      it "is a new instance of MSFL::Datasets::Movie" do
+        expect(mut).to be_a MSFL::Datasets::Movie
       end
     end
 
-    context "when params[:dataset] is :cars" do
+    context "when params[:dataset] is :car" do
 
-      let(:dataset) { :cars }
+      let(:dataset) { :car }
 
-      it "is a new instance of MSFL::Datasets::Cars" do
-        expect(mut).to be_a MSFL::Datasets::Cars
+      it "is a new instance of MSFL::Datasets::Car" do
+        expect(mut).to be_a MSFL::Datasets::Car
       end
     end
   end
@@ -74,14 +74,14 @@ describe "MSFL::Sinatra" do
 
     let(:dataset) { nil }
 
-    context "when params[:dataset] is :movies" do
+    context "when params[:dataset] is :movie" do
 
-      let(:dataset) { :movies }
+      let(:dataset) { :movie }
 
-      it "is a semantic validator instance of MSFL::Datasets::Movies" do
+      it "is a semantic validator instance of MSFL::Datasets::Movie" do
         validator = mut
         expect(validator).to be_a MSFL::Validators::Semantic
-        expect(validator.dataset).to be_a MSFL::Datasets::Movies
+        expect(validator.dataset).to be_a MSFL::Datasets::Movie
       end
     end
   end
