@@ -13,6 +13,7 @@ module MSFL
         obj = ::JSON.parse(json_to_parse)
         obj = arrays_to_sets obj
         obj = convert_keys_to_symbols obj
+        obj = convert_between_to_gte_lte obj
         obj
       end
 
@@ -53,6 +54,34 @@ module MSFL
           end
         elsif obj.is_a? Array # Generally this will not be the case as the expectation is that arrays_to_sets has already run
           result = convert_keys_to_symbols(arrays_to_sets(obj))
+        end
+        result
+      end
+
+      # Recursively converts all between operators to equivalent anded gte / lte
+      # it currently creates the converted operators in the implied AND format
+      #
+      # @param obj [Object] the object to recurse through to convert all betweens to gte / ltes
+      # @return [Object] the object with betweens converted to anded gte / ltes
+      def self.convert_between_to_gte_lte(obj)
+        result = obj
+        if obj.is_a? Hash
+          obj.each do |k, v|
+            if v.is_a?(Hash) && v.has_key?(:between) && v[:between].has_key?(:start) && v[:between].has_key?(:end)
+              lower_bound = convert_between_to_gte_lte v[:between][:start]
+              upper_bound = convert_between_to_gte_lte v[:between][:end]
+              result[k] = { gte: lower_bound, lte: upper_bound  }
+            else
+              result[k] = convert_between_to_gte_lte v
+            end
+          end
+        elsif obj.is_a? Types::Set
+          result = Types::Set.new
+          obj.each do |v|
+            result << convert_between_to_gte_lte(v)
+          end
+        elsif obj.is_a? Array
+          raise ArgumentError, ".convert_between_to_gte_lte requires its argument to have been preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
         end
         result
       end
