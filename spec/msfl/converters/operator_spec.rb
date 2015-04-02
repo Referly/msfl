@@ -23,19 +23,19 @@ describe "MSFL::Converters::Operator" do
       let(:test_instance) do
         t_i = klass.new
 
-        allow(t_i).to receive(:implicit_between_to_explicit_recursively)
+        allow(t_i).to receive(:implicit_between_to_explicit_recursively) { "ant" }
         expect(t_i).to receive(:implicit_between_to_explicit_recursively).once
 
-        allow(t_i).to receive(:between_to_gte_lte_recursively)
+        allow(t_i).to receive(:between_to_gte_lte_recursively) { "bat" }
         expect(t_i).to receive(:between_to_gte_lte_recursively).once
 
-        allow(t_i).to receive(:implicit_and_to_explicit_recursively)
+        allow(t_i).to receive(:implicit_and_to_explicit_recursively) { "cat" }
         expect(t_i).to receive(:implicit_and_to_explicit_recursively).once
         t_i
       end
 
       it "runs all conversions in CONVERSIONS" do
-        subject
+        expect(subject).to eq "cat"
       end
     end
 

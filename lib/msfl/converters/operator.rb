@@ -25,11 +25,12 @@ module MSFL
         unless all_conversions?(conversions_to_run)
           raise ArgumentError, "#run_conversions second argument is optional, if specified it must be an Array of Symbols"
         end
-
+        result = obj
         CONVERSIONS.each do |conv|
           # In the order that items are in CONVERSIONS run all of the conversions_to_run
-          obj = send(conv, obj) if conversions_to_run.include?(conv)
+          result = send(conv, result) if conversions_to_run.include?(conv)
         end
+        result
       end
 
 
