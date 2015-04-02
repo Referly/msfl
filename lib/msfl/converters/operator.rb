@@ -3,6 +3,39 @@ module MSFL
     class Operator
       include MSFL::Validators::Definitions::HashKey
 
+      # Order is respected by run_conversions
+      # in otherwords run_conversions executes conversions in the order they occur
+      # in CONVERSIONS, not in the order in which they are passed into the method
+      CONVERSIONS = [
+          :implicit_between_to_explicit_recursively,
+          :between_to_gte_lte_recursively,
+          :implicit_and_to_explict_recursively
+      ]
+
+      # Runs conversions on an object
+      # It respects the order of CONVERSIONS, not the order of elements in conversions_to_run
+      #
+      # @param obj [Object] the object to run the conversions on
+      # @param conversions_to_run [Array<Symbol>] an array of the conversions that should be run, duplicates are ignored
+      # @return [Object] the object with the conversions applied
+      def run_conversions(obj, conversions_to_run = nil)
+        conversions_to_run ||= CONVERSIONS
+        unless all_conversions?(conversions_to_run)
+          raise ArgumentError, "#run_conversions second argument is optional, if specified it must be an Array of Symbols"
+        end
+
+        CONVERSIONS.each do |conv|
+          # In the order that items are in CONVERSIONS run all of the conversions_to_run
+          obj = send(conv, obj) if conversions_to_run.include?(conv)
+        end
+      end
+
+
+
+      def implicit_between_to_explicit_recursively(obj)
+
+      end
+
       # Recursively converts all between operators to equivalent anded gte / lte
       # it currently creates the converted operators into the implied AND format
       #
@@ -140,6 +173,18 @@ module MSFL
           result << implicit_and_to_explicit_recursively(v)
         end
         result
+      end
+
+      # Returns true if the argument is an Array of Symbols, otherwise false
+      #
+      # @param obj [Obj] the object to check
+      # @return [Bool] true if the argument is an Array of Symbols
+      def all_conversions?(obj)
+        return false unless obj.is_a?(Array)
+        obj.each do |v|
+          return false unless v.is_a?(Symbol)
+        end
+        true
       end
     end
   end

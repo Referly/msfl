@@ -2,6 +2,94 @@ require 'spec_helper'
 
 describe "MSFL::Converters::Operator" do
 
+  describe "#run_conversions" do
+
+    subject { test_instance.run_conversions obj, conversions_to_run }
+
+    let(:klass) do
+      class OpTestConverter < MSFL::Converters::Operator
+      end
+      OpTestConverter
+    end
+
+    let(:test_instance) { klass.new }
+
+    let(:obj) { Object.new }
+
+    let(:conversions_to_run) { nil }
+
+    context "when the conversions_to_run argument is nil" do
+
+      let(:test_instance) do
+        t_i = klass.new
+
+        allow(t_i).to receive(:implicit_between_to_explicit_recursively)
+        expect(t_i).to receive(:implicit_between_to_explicit_recursively).once
+
+        allow(t_i).to receive(:between_to_gte_lte_recursively)
+        expect(t_i).to receive(:between_to_gte_lte_recursively).once
+
+        allow(t_i).to receive(:implicit_and_to_explict_recursively)
+        expect(t_i).to receive(:implicit_and_to_explict_recursively).once
+        t_i
+      end
+
+      it "runs all conversions in CONVERSIONS" do
+        subject
+      end
+    end
+
+    context "when conversions_to_run is an array of symbols" do
+
+      let(:conversions_to_run) { [:implicit_and_to_explict_recursively, :between_to_gte_lte_recursively]}
+
+      it "runs all elements in CONVERSIONS that are in conversions_to_run" do
+        allow(test_instance).to receive :implicit_and_to_explict_recursively
+        expect(test_instance).to receive(:implicit_and_to_explict_recursively)
+
+        allow(test_instance).to receive :between_to_gte_lte_recursively
+        expect(test_instance).to receive(:between_to_gte_lte_recursively)
+
+        allow(test_instance).to receive :implicit_between_to_explicit_recursively
+        expect(test_instance).to receive(:implicit_between_to_explicit_recursively).never
+
+        subject
+      end
+
+      it "runs the indicated conversions exactly once" do
+
+        allow(test_instance).to receive :implicit_and_to_explict_recursively
+        expect(test_instance).to receive(:implicit_and_to_explict_recursively).once
+
+        allow(test_instance).to receive :between_to_gte_lte_recursively
+        expect(test_instance).to receive(:between_to_gte_lte_recursively).once
+
+        subject
+      end
+
+      it "runs the indicated conversions in the order they appear in CONVERSIONS" do
+
+        allow(test_instance).to receive :between_to_gte_lte_recursively
+        expect(test_instance).to receive(:between_to_gte_lte_recursively).ordered
+
+        allow(test_instance).to receive :implicit_and_to_explict_recursively
+        expect(test_instance).to receive(:implicit_and_to_explict_recursively).ordered
+
+        subject
+      end
+    end
+
+
+    context "when conversions_to_run is not nil and not an array of symbols" do
+
+      let(:conversions_to_run) { "foo" }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+  end
+
   describe "#implicit_and_to_explicit" do
 
     subject(:mut) { test_instance.implicit_and_to_explicit_recursively arg }
