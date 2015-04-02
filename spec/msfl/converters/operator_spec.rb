@@ -90,6 +90,120 @@ describe "MSFL::Converters::Operator" do
     end
   end
 
+  describe "#implicit_between_to_explicit_recursively" do
+
+    subject { test_instance.implicit_between_to_explicit_recursively arg }
+
+    let(:test_instance) { MSFL::Converters::Operator.new }
+
+    let(:arg) { raise ArgumentError, "You are expected to define the arg variable" }
+
+    let(:expected) { raise ArgumentError, "You are expected to define the expected value" }
+
+    context "when there is not an implicit BETWEEN" do
+
+      ["foo", { foo: "bar" }, 123, 56.12, :aaaah].each do |arg|
+
+        context "when the argument is #{arg}" do
+
+          let(:arg) { arg }
+
+          it "is the argument unchanged" do
+            expect(subject).to eq arg
+          end
+        end
+      end
+    end
+
+    context "when there is an implicit BETWEEN" do
+
+      context "when the implicit BETWEEN is at the highest possible level of the filter" do
+
+        let(:arg) { { year: { start: 2001, end: 2005 } } }
+
+        let(:expected) { { year: { between: { start: 2001, end: 2005 } } } }
+
+        it "is an explicit BETWEEN" do
+          expect(subject).to eq expected
+        end
+      end
+
+      context "when the implicit BETWEEN is inside of a MSFL::Types::Set" do
+
+        let(:arg) do
+          { and:
+                MSFL::Types::Set.new([
+                                         { make: "Honda"},
+                                         { year: { start: 2001, end: 2005 } }
+                                 ])
+          }
+        end
+
+        let(:expected) do
+          { and: MSFL::Types::Set.new([
+                                          { make: "Honda" },
+                                          { year: { between: { start: 2001, end: 2005 } } }
+                                      ])}
+        end
+
+        it "recursively converts the implicit BETWEEN to an explicit BETWEEN" do
+          expect(subject).to eq expected
+        end
+      end
+
+      # This can't actually happen in the current MSFL syntax (at least I don't think it can)
+      context "when the implicit BETWEEN is inside of another Hash" do
+
+        let(:arg) do
+          { foo: { bar: { start: "2015-01-01", end: "2015-03-01" } } }
+        end
+
+        let(:expected) do
+          { foo: { bar: { between: { start: "2015-01-01", end: "2015-03-01" } } } }
+        end
+
+        it "recursively converts the implicit BETWEEN to an explicit BETWEEN" do
+          expect(subject).to eq expected
+        end
+      end
+
+      context "when there are multiple implicit BETWEENs that are deeply nested" do
+
+        let(:deep_nest) do
+          {
+              cat: 1221,
+              dog: "fur",
+              lol: MSFL::Types::Set.new([ { hat: { start: 1, end: 5 } } ]),
+              :"1337" => 1337.1337,
+              noob: MSFL::Types::Set.new([
+                                             MSFL::Types::Set.new([123]),
+                                             { :"123" => 456, onetwo: { start: 3, end: 4 } } ]) }
+        end
+
+        let(:arg) { deep_nest }
+
+        let(:expected) do
+          {
+              cat: 1221,
+              dog: "fur",
+              lol: MSFL::Types::Set.new([
+                                            { hat: { between: { start: 1, end: 5 } } }
+                                        ]),
+              :"1337" => 1337.1337,
+              noob: MSFL::Types::Set.new([
+                                             MSFL::Types::Set.new([123]),
+                                             { :"123" => 456, onetwo: { between: { start: 3, end: 4 } } }
+                                         ])
+          }
+        end
+
+        it "recursively converts the implicit BETWEENs to an explicit BETWEENs" do
+          expect(subject).to eq expected
+        end
+      end
+    end
+  end
+
   describe "#implicit_and_to_explicit" do
 
     subject(:mut) { test_instance.implicit_and_to_explicit_recursively arg }

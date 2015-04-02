@@ -6,6 +6,8 @@ module MSFL
       # Order is respected by run_conversions
       # in otherwords run_conversions executes conversions in the order they occur
       # in CONVERSIONS, not in the order in which they are passed into the method
+      #
+      # conversion order is context-free
       CONVERSIONS = [
           :implicit_between_to_explicit_recursively,
           :between_to_gte_lte_recursively,
@@ -32,8 +34,25 @@ module MSFL
 
 
 
+      # { year: { start: 2001, end: 2005 } }
+      #  => { year: { between: { start: 2001, end: 2015 } } }
       def implicit_between_to_explicit_recursively(obj)
-
+        if obj.is_a? Hash
+          # if the hash has two keys :start and :end, nest it inside a between and recurse on the values
+          if obj.has_key?(:start) && obj.has_key?(:end)
+            result = { between: { start: implicit_between_to_explicit_recursively(obj[:start]), end: implicit_between_to_explicit_recursively(obj[:end]) } }
+          else
+            result = Hash.new
+            obj.each do |k, v|
+              result[k] = implicit_between_to_explicit_recursively(v)
+            end
+          end
+        elsif obj.is_a? Types::Set
+          result = recurse_through_set :implicit_between_to_explicit_recursively, obj
+        elsif obj.is_a? Array
+          raise ArgumentError, "#implicit_between_to_explicit_recursively requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
+        end
+        result ||= obj
       end
 
       # Recursively converts all between operators to equivalent anded gte / lte
@@ -54,10 +73,7 @@ module MSFL
             end
           end
         elsif obj.is_a? Types::Set
-          result = Types::Set.new
-          obj.each do |v|
-            result << between_to_gte_lte_recursively(v)
-          end
+          result = recurse_through_set :between_to_gte_lte_recursively, obj
         elsif obj.is_a? Array
           raise ArgumentError, "#between_to_gte_lte requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
         end
@@ -95,13 +111,8 @@ module MSFL
               elsif obj[first_key].is_a? MSFL::Types::Set
                 # This situation occurs when there are nested logical operators
                 # obj is a hash, with one key that is not a binary operator which has a value that is a MSFL::Types::Set
-                result = { }
-                and_array = MSFL::Types::Set.new
-                obj[first_key].each do |v|
-                  # byebug
-                  and_array << implicit_and_to_explicit_recursively(v)
-                end
-                result[first_key] = and_array
+                result = Hash.new
+                result[first_key] = recurse_through_set :implicit_and_to_explicit_recursively, obj[first_key]
               elsif obj[first_key].is_a? Array
                 raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
               end
@@ -143,7 +154,6 @@ module MSFL
         # the first key an operator
         raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" unless all_operators?(hash.keys)
         # all keys are operators
-
         first_key = hash.keys.first
         if hash.keys.count == 1
           # There's only one key so there cannot be an implied AND at this level
@@ -155,7 +165,6 @@ module MSFL
           else
             { first_key => implicit_and_to_explicit_recursively(hash[first_key]) }
           end
-
         else
           raise ArgumentError, "#implicit_and_to_explicit requires that parent_key be specified when converting operators" if parent_key.nil?
           # parent key is non nil
@@ -168,9 +177,13 @@ module MSFL
       end
 
       def i_to_e_set(set, parent_key = nil)
+        recurse_through_set :implicit_and_to_explicit_recursively, set
+      end
+
+      def recurse_through_set(method, set)
         result = MSFL::Types::Set.new
         set.each do |v|
-          result << implicit_and_to_explicit_recursively(v)
+          result << send(method, v)
         end
         result
       end
