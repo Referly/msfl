@@ -49,22 +49,28 @@ module MSFL
       def implicit_and_to_explicit_recursively(obj, parent_key = nil)
         if obj.is_a? Hash
           first_key = obj.keys.first
-          if hash_key_operators.include?(first_key)
-            # the first key an operator
-            raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" unless all_operators?(obj.keys)
-            # all keys are operators
-            raise ArgumentError, "#implicit_and_to_explicit requires that parent_key be specified when converting operators" if parent_key.nil?
-            # parent key is non nil
-            and_array = []
-            obj.each do |k, v|
-              and_array << { parent_key => { k => implicit_and_to_explicit_recursively(v, k) } }
-            end
+          if binary_operators.include?(first_key)
+            result = i_to_e_bin_op obj, parent_key
+          elsif logical_operators.include?(first_key)
+            result = i_to_e_log_op obj, parent_key
           else
             # the first key is not an operator
             # if there is only one key just assign the result of calling this method recursively on the value to the result for the key
             if obj.keys.count == 1
               if obj[first_key].is_a?(Hash)
                 result = implicit_and_to_explicit_recursively obj[first_key], first_key
+              elsif obj[first_key].is_a? MSFL::Types::Set
+                # This situation occurs when there are nested logical operators
+                # obj is a hash, with one key that is not a binary operator which has a value that is a MSFL::Types::Set
+                result = { }
+                and_array = MSFL::Types::Set.new
+                obj[first_key].each do |v|
+                  # byebug
+                  and_array << implicit_and_to_explicit_recursively(v)
+                end
+                result[first_key] = and_array
+              elsif obj[first_key].is_a? Array
+                raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
               end
             else
               raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" if any_operators?(obj.keys)
@@ -77,18 +83,63 @@ module MSFL
                   and_array << { k => v }
                 end
               end
+              result = { and: MSFL::Types::Set.new(and_array) }
             end
           end
-          result ||= { and: MSFL::Types::Set.new(and_array) }
         elsif obj.is_a? MSFL::Types::Set
-          result = Types::Set.new
-          obj.each do |v|
-            result << implicit_and_to_explicit_recursively(v)
-          end
+          result = i_to_e_set obj, parent_key
         elsif obj.is_a? Array
           raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
         end
         result ||= obj
+      end
+
+    private
+      # Recursively handle a hash containing keys that are all logical operators
+      def i_to_e_log_op(hash, parent_key = nil)
+        raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be logical operators" unless all_logical_operators?(hash.keys)
+        result = {}
+        hash.each do |key, value|
+          result[key] = implicit_and_to_explicit_recursively value
+        end
+        result
+      end
+
+      # Recursively handle a hash containing keys that are all binary operators
+      def i_to_e_bin_op(hash, parent_key = nil)
+        # the first key an operator
+        raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" unless all_operators?(hash.keys)
+        # all keys are operators
+
+        first_key = hash.keys.first
+        if hash.keys.count == 1
+          # There's only one key so there cannot be an implied AND at this level
+          if parent_key && (! binary_operators.include?(parent_key)) # this needs more testing - I'm not entirely sure if I should check for this esoteric case of immediately nested explicit ANDs inside of an implied AND
+            # The parent_key argument was provided which means that the caller expects the result to be a hash of at least two levels
+            # where the first level has a key of the parent_key with a value of a hash
+            # first_key is passed in the recursive call
+            { parent_key => { first_key => implicit_and_to_explicit_recursively(hash[first_key], first_key)}}
+          else
+            { first_key => implicit_and_to_explicit_recursively(hash[first_key]) }
+          end
+
+        else
+          raise ArgumentError, "#implicit_and_to_explicit requires that parent_key be specified when converting operators" if parent_key.nil?
+          # parent key is non nil
+          and_array = []
+          hash.each do |k, v|
+            and_array << { parent_key => { k => implicit_and_to_explicit_recursively(v, k) } }
+          end
+          { and: MSFL::Types::Set.new(and_array) }
+        end
+      end
+
+      def i_to_e_set(set, parent_key = nil)
+        result = MSFL::Types::Set.new
+        set.each do |v|
+          result << implicit_and_to_explicit_recursively(v)
+        end
+        result
       end
     end
   end

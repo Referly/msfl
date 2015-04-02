@@ -12,6 +12,40 @@ describe "MSFL::Converters::Operator" do
 
     let(:expected) { raise ArgumentError, "You are expected to define the expected value" }
 
+    context "when there is not an implicit AND" do
+
+      let(:expected) { arg }
+
+      context "when the arg is a scalar" do
+
+        let(:arg) { 50 }
+
+        it "is the arg unchanged" do
+          expect(mut).to eq expected
+        end
+      end
+
+      context "when the arg is single level" do
+
+        let(:arg) { { gte: 1000 }  }
+
+        it "is the arg unchanged" do
+          expect(mut).to eq expected
+        end
+      end
+
+      context "when the arg is multi level" do
+
+        let(:arg) { { value: { gte: 1000 } } }
+
+        it "is the arg unchanged" do
+          expect(mut).to eq expected
+        end
+      end
+
+
+    end
+
     context "when the implicit AND exists on a Hash whose keys are fields" do
 
       # TYPE 1 --- { make: "chevy", year: 2010 } => { and: [ { make: "chevy" }, { year: 2010 }] }
@@ -62,6 +96,33 @@ describe "MSFL::Converters::Operator" do
         it "converts both of the implicit ANDs to explicit ANDs" do
           expect(mut).to eq expected
         end
+      end
+    end
+
+    context "when the implicit AND is within a MSFL::Types::Set" do
+
+      let(:arg) do
+        { and: MSFL::Types::Set.new([
+                                       { make: "chevy", year: { gte: 2010, lte: 2012 } },
+                                       { value: { gte: 1000 } }
+                                   ])}
+      end
+
+      let(:expected) do
+        { and: MSFL::Types::Set.new([
+                                       { and: MSFL::Types::Set.new([
+                                                                       { make: "chevy" },
+                                                                       { and: MSFL::Types::Set.new([
+                                                                                                       { year: { gte: 2010 } },
+                                                                                                       { year: { lte: 2012 } }
+                                                                                                   ])}
+                                       ])},
+                                       { value: { gte: 1000 } }
+                                   ])}
+      end
+
+      it "converts all of the implicit ANDs" do
+        expect(mut).to eq expected
       end
     end
   end

@@ -13,9 +13,11 @@ module MSFL
 
         # Operators still needing parsing: ellipsis2, tilda
         def hash_key_operators
+          binary_operators.concat(logical_operators)
+        end
+
+        def binary_operators
           [
-              :and,         # logical AND
-              :or,          # logical OR
               :in,          # IN
               :between,     # inclusive range for integers, dates, and date times
               :start,       # a range bound inclusively to the left
@@ -31,6 +33,10 @@ module MSFL
           ]
         end
 
+        def logical_operators
+          [:and, :or]
+        end
+
         # Returns true if all elements of arr are operators, false otherwise
         #
         # @param arr [Array<Symbol>] the Array of Symbols to be checked against the operators list
@@ -38,6 +44,18 @@ module MSFL
         def all_operators?(arr)
           arr.each do |e|
             return false unless hash_key_operators.include?(e)
+          end
+          true
+        end
+
+
+        # Returns true if all elements of arr are logical operators, false otherwise
+        #
+        # @param arr [Array<Symbol>] and array of symbols to check to see if all elements are logical operators
+        # @return [Bool] it is true if all the elements are logical operators, otherwise false
+        def all_logical_operators?(arr)
+          arr.each do |e|
+            return false unless logical_operators.include?(e)
           end
           true
         end
