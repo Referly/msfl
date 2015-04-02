@@ -11,7 +11,7 @@ module MSFL
       CONVERSIONS = [
           :implicit_between_to_explicit_recursively,
           :between_to_gte_lte_recursively,
-          :implicit_and_to_explict_recursively
+          :implicit_and_to_explicit_recursively
       ]
 
       # Runs conversions on an object

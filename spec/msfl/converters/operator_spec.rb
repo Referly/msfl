@@ -29,8 +29,8 @@ describe "MSFL::Converters::Operator" do
         allow(t_i).to receive(:between_to_gte_lte_recursively)
         expect(t_i).to receive(:between_to_gte_lte_recursively).once
 
-        allow(t_i).to receive(:implicit_and_to_explict_recursively)
-        expect(t_i).to receive(:implicit_and_to_explict_recursively).once
+        allow(t_i).to receive(:implicit_and_to_explicit_recursively)
+        expect(t_i).to receive(:implicit_and_to_explicit_recursively).once
         t_i
       end
 
@@ -41,11 +41,11 @@ describe "MSFL::Converters::Operator" do
 
     context "when conversions_to_run is an array of symbols" do
 
-      let(:conversions_to_run) { [:implicit_and_to_explict_recursively, :between_to_gte_lte_recursively]}
+      let(:conversions_to_run) { [:implicit_and_to_explicit_recursively, :between_to_gte_lte_recursively]}
 
       it "runs all elements in CONVERSIONS that are in conversions_to_run" do
-        allow(test_instance).to receive :implicit_and_to_explict_recursively
-        expect(test_instance).to receive(:implicit_and_to_explict_recursively)
+        allow(test_instance).to receive :implicit_and_to_explicit_recursively
+        expect(test_instance).to receive(:implicit_and_to_explicit_recursively)
 
         allow(test_instance).to receive :between_to_gte_lte_recursively
         expect(test_instance).to receive(:between_to_gte_lte_recursively)
@@ -58,8 +58,8 @@ describe "MSFL::Converters::Operator" do
 
       it "runs the indicated conversions exactly once" do
 
-        allow(test_instance).to receive :implicit_and_to_explict_recursively
-        expect(test_instance).to receive(:implicit_and_to_explict_recursively).once
+        allow(test_instance).to receive :implicit_and_to_explicit_recursively
+        expect(test_instance).to receive(:implicit_and_to_explicit_recursively).once
 
         allow(test_instance).to receive :between_to_gte_lte_recursively
         expect(test_instance).to receive(:between_to_gte_lte_recursively).once
@@ -72,8 +72,8 @@ describe "MSFL::Converters::Operator" do
         allow(test_instance).to receive :between_to_gte_lte_recursively
         expect(test_instance).to receive(:between_to_gte_lte_recursively).ordered
 
-        allow(test_instance).to receive :implicit_and_to_explict_recursively
-        expect(test_instance).to receive(:implicit_and_to_explict_recursively).ordered
+        allow(test_instance).to receive :implicit_and_to_explicit_recursively
+        expect(test_instance).to receive(:implicit_and_to_explicit_recursively).ordered
 
         subject
       end
