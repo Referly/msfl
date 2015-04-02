@@ -37,15 +37,21 @@ module MSFL
 
       # { year: { start: 2001, end: 2005 } }
       #  => { year: { between: { start: 2001, end: 2015 } } }
-      def implicit_between_to_explicit_recursively(obj)
-        if obj.is_a? Hash
+      def implicit_between_to_explicit_recursively(obj, parent_key = nil)
+        if parent_key == :between
+          # The immediately ancestor key is :between, so don't do anything special with :start and :end
+          result = Hash.new
+          obj.each do |k, v|
+            result[k] = implicit_between_to_explicit_recursively(v)
+          end
+        elsif obj.is_a? Hash
           # if the hash has two keys :start and :end, nest it inside a between and recurse on the values
           if obj.has_key?(:start) && obj.has_key?(:end)
             result = { between: { start: implicit_between_to_explicit_recursively(obj[:start]), end: implicit_between_to_explicit_recursively(obj[:end]) } }
           else
             result = Hash.new
             obj.each do |k, v|
-              result[k] = implicit_between_to_explicit_recursively(v)
+              result[k] = implicit_between_to_explicit_recursively(v, k)
             end
           end
         elsif obj.is_a? Types::Set

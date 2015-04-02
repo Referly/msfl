@@ -77,6 +77,46 @@ describe "MSFL::Converters::Operator" do
 
         subject
       end
+
+      context "when the object to be converted is { investor_id: { between: { start: 10, end: 50 } } }" do
+
+        let(:test_instance) { MSFL::Converters::Operator.new }
+
+        let(:obj) { { investor_id: { between: { start: 10, end: 50 } } } }
+
+        let(:expected) do
+          { and: MSFL::Types::Set.new([
+                                          { investor_id: { gte: 10 } },
+                                          { investor_id: { lte: 50 } }
+                                      ])}
+        end
+
+        let(:conversions_to_run) { nil }
+
+        it "is the the ANDed gte / lte equivalent expression" do
+          expect(subject).to eq expected
+        end
+      end
+
+      context "when the object to be converted is { investor_id: { start: 10, end: 50 } }" do
+
+        let(:test_instance) { MSFL::Converters::Operator.new }
+
+        let(:obj) { { investor_id: { start: 10, end: 50 } } }
+
+        let(:expected) do
+          { and: MSFL::Types::Set.new([
+                                          { investor_id: { gte: 10 } },
+                                          { investor_id: { lte: 50 } }
+                                      ])}
+        end
+
+        let(:conversions_to_run) { nil }
+
+        it "is the the ANDed gte / lte equivalent expression" do
+          expect(subject).to eq expected
+        end
+      end
     end
 
 
@@ -198,6 +238,17 @@ describe "MSFL::Converters::Operator" do
         end
 
         it "recursively converts the implicit BETWEENs to an explicit BETWEENs" do
+          expect(subject).to eq expected
+        end
+      end
+
+      context "when there is an explicit BETWEEN" do
+
+        let(:arg) { { investor_id: { between: { start: 10, end: 50 } } } }
+
+        let(:expected) { arg }
+
+        it "is unchanged" do
           expect(subject).to eq expected
         end
       end
