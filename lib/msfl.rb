@@ -4,6 +4,7 @@ require_relative 'msfl/validators'
 require_relative 'msfl/configuration'
 require_relative 'msfl/datasets'
 require_relative 'msfl/sinatra'
+require_relative 'msfl/converters'
 
 module MSFL
   class << self

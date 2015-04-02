@@ -30,6 +30,28 @@ module MSFL
               :neg,         # logical negation
           ]
         end
+
+        # Returns true if all elements of arr are operators, false otherwise
+        #
+        # @param arr [Array<Symbol>] the Array of Symbols to be checked against the operators list
+        # @return [Bool] true if all of the elements of arr are operators
+        def all_operators?(arr)
+          arr.each do |e|
+            return false unless hash_key_operators.include?(e)
+          end
+          true
+        end
+
+        # Returns true if any of the elements in arr are operators, otherwise false
+        #
+        # @param arr [Array] the array of elements to check for the presence of operators
+        # @return [Bool] true if any of the elements of arr are operators
+        def any_operators?(arr)
+          arr.each do |e|
+            return true if hash_key_operators.include?(e)
+          end
+          false
+        end
       end
     end
   end
