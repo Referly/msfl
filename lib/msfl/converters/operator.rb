@@ -90,26 +90,6 @@ module MSFL
         end
         result ||= obj
       end
-
-    private
-      # Use this method for converting implicit and hashes to explicit ones when the keys are operators
-      def implicit_to_explicit_for_ops(hash)
-        and_array = []
-        field = hash.keys.first
-        if hash[field].is_a? Hash
-          hash[field].each do |k, v|
-            and_array << { field => { k => v } }
-          end
-        end
-        { and: MSFL::Types::Set.new(and_array) }
-      end
-
-      # Use this method for converting implicit and hashes to explicit ones when the keys are properties
-      def implicit_to_explicit_for_field(hash)
-        and_array = []
-        hash.each { |key, value| and_array << { key => value } }
-        { and: MSFL::Types::Set.new(and_array) }
-      end
     end
   end
 end
