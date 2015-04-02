@@ -26,22 +26,30 @@ module MSFL
             result << between_to_gte_lte_recursively(v)
           end
         elsif obj.is_a? Array
-          raise ArgumentError, ".convert_between_to_gte_lte requires its argument to have been preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
+          raise ArgumentError, "#between_to_gte_lte requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
         end
         result
       end
 
       # Convert a Hash containing an implict and into an explicit and
       #
-      # TYPE 1 --- { make: "chevy", year: 2010 } => { and: [ { make: "chevy" }, { year: 2010 }] }
-      # TYPE 2 --- { year: { gte: 2010, lte: 2012 } } => { and: [ { year: { gte: 2010 } }, { year: { lte: 2012 } } ] }
+      # TYPE 1 ---
+      #     { make: "chevy", year: 2010 }
+      #      =>    { and: [ { make: "chevy" }, { year: 2010 }] }
+      # TYPE 2 ---
+      #     { year: { gte: 2010, lte: 2012 } }
+      #      => { and: [ { year: { gte: 2010 } }, { year: { lte: 2012 } } ] }
+      #
+      # TYPE 3 ---
+      #     { make: "chevy", year: { gte: 2010, lte: 2012 } }
+      #      => { and: [ { make: "chevy" }, { and: [ { year: { gte: 2010 } }, { year: { lte: 2012 } } ] } ] }
       #
       # @param obj [Object] the Hash that is an implicit and
       # @return [Hash] the resulting explicit hash
-      def implicit_and_to_explicit(obj, parent_key = nil)
-        result = obj
+      def implicit_and_to_explicit_recursively(obj, parent_key = nil)
         if obj.is_a? Hash
-          if hash_key_operators.include?(obj.keys.first)
+          first_key = obj.keys.first
+          if hash_key_operators.include?(first_key)
             # the first key an operator
             raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" unless all_operators?(obj.keys)
             # all keys are operators
@@ -49,28 +57,38 @@ module MSFL
             # parent key is non nil
             and_array = []
             obj.each do |k, v|
-              and_array << { parent_key => { k => implicit_and_to_explicit(v, k) } }
+              and_array << { parent_key => { k => implicit_and_to_explicit_recursively(v, k) } }
             end
           else
             # the first key is not an operator
-            raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" if any_operators?(obj.keys)
-            # none of the keys are operators
-            and_array = []
-            obj.each do |k, v|
-              if v.is_a? Hash
-                and_array << implicit_and_to_explicit(v, k)
-              else
-                and_array << { k => v }
+            # if there is only one key just assign the result of calling this method recursively on the value to the result for the key
+            if obj.keys.count == 1
+              if obj[first_key].is_a?(Hash)
+                result = implicit_and_to_explicit_recursively obj[first_key], first_key
+              end
+            else
+              raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" if any_operators?(obj.keys)
+              # none of the keys are operators
+              and_array = []
+              obj.each do |k, v|
+                if v.is_a? Hash
+                  and_array << implicit_and_to_explicit_recursively(v, k)
+                else
+                  and_array << { k => v }
+                end
               end
             end
           end
-          result = { and: MSFL::Types::Set.new(and_array) }
+          result ||= { and: MSFL::Types::Set.new(and_array) }
+        elsif obj.is_a? MSFL::Types::Set
+          result = Types::Set.new
+          obj.each do |v|
+            result << implicit_and_to_explicit_recursively(v)
+          end
+        elsif obj.is_a? Array
+          raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
         end
-        result
-      end
-
-      def implicit_and_to_explicit_recursively(obj)
-
+        result ||= obj
       end
 
     private

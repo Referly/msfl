@@ -1,0 +1,193 @@
+require 'spec_helper'
+
+describe "MSFL::Converters::Operator" do
+
+  describe "#implicit_and_to_explicit" do
+
+    subject(:mut) { test_instance.implicit_and_to_explicit_recursively arg }
+
+    let(:test_instance) { MSFL::Converters::Operator.new }
+
+    let(:arg) { raise ArgumentError, "You are expected to define the arg variable" }
+
+    let(:expected) { raise ArgumentError, "You are expected to define the expected value" }
+
+    context "when the implicit AND exists on a Hash whose keys are fields" do
+
+      # TYPE 1 --- { make: "chevy", year: 2010 } => { and: [ { make: "chevy" }, { year: 2010 }] }
+      let(:arg) { { make: "chevy", year: 2010 } }
+
+      let(:expected) { { and: MSFL::Types::Set.new([
+                                                       { make: "chevy" },
+                                                       { year: 2010 }
+                                                   ])}}
+
+      it "converts the implicit AND to an explicit AND" do
+        expect(mut).to eq expected
+      end
+    end
+
+    context "when the implicit AND exists on a Hash whose value is a Hash with multiple operator keys" do
+
+      # TYPE 2 --- { year: { gte: 2010, lte: 2012 } } => { and: [ { year: { gte: 2010 } }, { year: { lte: 2012 } } ] }
+      let(:arg) { { year: { gte: 2010, lte: 2012 } } }
+
+      let(:expected) { { and: MSFL::Types::Set.new([
+                                                       { year: { gte: 2010 } },
+                                                       { year: { lte: 2012 } }
+                                                   ])}}
+
+      it "converts the implicit AND to an explicit AND" do
+        expect(mut).to eq expected
+      end
+    end
+
+    context "when the implicit AND exists on a Hash whose keys are fields" do
+
+      context "when the implicit AND exists on a Hash whose value is a Hash with multiple operator keys" do
+
+        # TYPE 3 --- { make: "chevy", year: { gte: 2010, lte: 2012 } } => { and: [ { make: "chevy" }, { and: [ { year: { gte: 2010 } }, { year: { lte: 2012 } } ] } ] }
+        let(:arg) { { make: "chevy", year: { gte: 2010, lte: 2012 } } }
+
+        let(:expected) do
+          { and: MSFL::Types::Set.new([
+                                          { make: "chevy" },
+                                          { and: MSFL::Types::Set.new([
+                                                                          { year: { gte: 2010 } },
+                                                                          { year: { lte: 2012 } }
+                                                                      ])}
+                                      ])}
+        end
+
+        it "converts both of the implicit ANDs to explicit ANDs" do
+          expect(mut).to eq expected
+        end
+      end
+    end
+  end
+
+  describe "#between_to_gte_lte_recursively" do
+
+    subject(:mut) { test_instance.between_to_gte_lte_recursively arg }
+
+    let(:test_instance) { MSFL::Converters::Operator.new }
+
+    let(:arg) { Object.new }
+
+    let(:deep_nest) do
+      {
+          cat: 1221,
+          dog: "fur",
+          lol: MSFL::Types::Set.new([ { hat: { between: { start: 1, end: 5 } } } ]),
+          :"1337" => 1337.1337, noob: MSFL::Types::Set.new([ MSFL::Types::Set.new([123]), { :"123" => 456, onetwo: 34 } ]) }
+    end
+
+    context "when the argument is a type other than MSFL::Types::Set, Hash, or Array" do
+
+      [55, 60.9, "five", :fourty, nil].each do |item|
+        context "when the argument is a #{item.class}" do
+
+          let(:arg) { item }
+
+          it "is equal to the argument" do
+            expect(mut).to eq arg
+          end
+        end
+      end
+    end
+
+    context "when the argument is a Hash" do
+
+      let(:arg) { { foo: { between: { start: "2015-01-01", end: "2015-04-01" } } } }
+
+      let(:expected) { { foo: { gte: "2015-01-01", lte: "2015-04-01" } } }
+
+      it "converts between clauses into anded gte / lte clauses" do
+        expect(mut).to eq expected
+      end
+
+      context "when the between clause is below the second level" do
+
+        let(:arg) do
+          {
+              and: MSFL::Types::Set.new([
+                                            { foo: { between: { start: -500, end: 12 } } },
+                                            { bar: { dog: "cat" } },
+                                        ])
+          }
+        end
+
+        let(:expected) do
+          {
+              and: MSFL::Types::Set.new([
+                                            { foo: { gte: -500, lte: 12 } },
+                                            { bar: { dog: "cat" } }
+                                        ])
+          }
+        end
+
+        it "recursively converts between clauses into anded gte / lte clauses" do
+          expect(mut).to eq expected
+        end
+      end
+    end
+
+    context "when the argument is a MSFL::Types::Set" do
+
+      let(:arg) { MSFL::Types::Set.new([ { foo: { between: { start: 1, end: 5 } } } ])}
+
+      let(:expected) { MSFL::Types::Set.new([ { foo: { gte: 1, lte: 5 } } ]) }
+
+      it "recursively converts between clauses into anded gte / lte clauses" do
+        expect(mut).to eq expected
+      end
+
+      context "when the between clause is below the second level" do
+
+        let(:arg) { MSFL::Types::Set.new([ { and: MSFL::Types::Set.new([{foo: { between: { start: 1, end: 5 } } }, {bar: 123}]) } ])}
+
+        let(:expected) { MSFL::Types::Set.new([ { and: MSFL::Types::Set.new([{ foo: { gte: 1, lte: 5} }, { bar: 123} ]) }]) }
+
+        it "recursively converts between clauses into anded gte / lte clauses" do
+          expect(mut).to eq expected
+        end
+      end
+    end
+
+    context "when the argument contains an Array" do
+
+      let(:arg) { [ { foo: { between: { start: 1, end: 5 } } } ] }
+
+      it "raises an ArgumentError" do
+        expect { mut }.to raise_error ArgumentError
+      end
+    end
+
+    context "when the argument is deeply nested and contains many types" do
+
+      let(:arg) { MSFL::Types::Set.new([deep_nest]) }
+
+      let(:expected) do
+        MSFL::Types::Set.new([
+                                 {
+                                     cat: 1221,
+                                     dog: "fur",
+                                     lol: MSFL::Types::Set.new(
+                                         [
+                                             { hat: { gte: 1, lte: 5} }
+                                         ]),
+                                     :"1337" => 1337.1337,
+                                     noob: MSFL::Types::Set.new(
+                                         [
+                                             MSFL::Types::Set.new([123]),
+                                             { :"123" => 456, onetwo: 34 }
+                                         ])
+                                 }])
+      end
+
+      it "recursively converts between clauses into anded gte / lte clauses" do
+        expect(mut).to eq expected
+      end
+    end
+  end
+end
