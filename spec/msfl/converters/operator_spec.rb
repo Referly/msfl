@@ -140,6 +140,24 @@ describe "MSFL::Converters::Operator" do
 
     let(:expected) { raise ArgumentError, "You are expected to define the expected value" }
 
+    context "when the argument is an Array" do
+
+      let(:arg) { ["foo", "bar"] }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+
+    context "when the argument is a Hash containing an Array" do
+
+      let(:arg) { { and: [ { foo: 1 }, { bar: 2 } ] } }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+
     context "when there is not an implicit BETWEEN" do
 
       ["foo", { foo: "bar" }, 123, 56.12, :aaaah].each do |arg|
