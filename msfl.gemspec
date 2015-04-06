@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'msfl'
-  s.version     = '1.1.5'
+  s.version     = '1.1.6'
   s.date        = '2015-04-01'
   s.summary     = "MSFL in Ruby"
   s.description = "Serializers, validators, and other tasty goodness for the Mattermark Semantic Filter Language in Ruby."
