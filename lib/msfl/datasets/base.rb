@@ -4,6 +4,43 @@ module MSFL
 
       include Validators::Definitions::HashKey
 
+      # This class singleton code and the register_dataset method are a cute nicety for conveniently registering
+      #  new datasets from within the datasets themselves
+      class << self
+        def registered_datasets
+          @registered_datasets ||= {}
+        end
+
+        def registered_datasets=(registered_datasets)
+          @registered_datasets = registered_datasets
+        end
+      end
+
+      # Register a MSFL::Dataset as a registered dataset so that other code can reference the dataset using its
+      # name as a symbol, instead of having to pass around the class name.
+      #
+      # If no arguments are provided it registers the current class and sets its name to the class name downcased
+      # The dataset being registered can be overridden. The dataset name (how one refers to the dataset as a symbol)
+      #  can also be overridden.
+      #
+      # @todo add tests
+      #
+      # @meta-spinach
+      # @param dataset [Class] optionally specify a dataset to register (use this when registration occurs outside
+      #  of a dataset's class scope)
+      # @param opts [Hash] options
+      #  notable option: :name (it allows you to override the dataset name)
+      def self.register_dataset(dataset = nil, opts = {})
+        dataset ||= self
+        dataset_name = opts[:name] if opts.has_key?(:name)
+        dataset_name ||= dataset.name
+        dataset_name.slice! "MSFL::Datasets::"
+        dataset_name.downcase!
+        registered_datasets = MSFL::Datasets::Base.registered_datasets
+        registered_datasets[dataset_name.to_sym] = dataset
+        MSFL::Datasets::Base.registered_datasets = registered_datasets
+      end
+
       # The descendant class MUST override this method otherwise all field validations will fail
       #
       # The method defines an array of symbols, indicating what fields are supported for the Dataset

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "MSFL::Datasets::Base" do
 
-  let(:test_instance) { MSFL::Datasets::Movies.new }
+  let(:test_instance) { MSFL::Datasets::Movie.new }
 
   let(:errors) { [ ] }
 
@@ -28,7 +28,7 @@ describe "MSFL::Datasets::Base" do
 
   describe "#type_conforms?" do
 
-    context "when MSFL is configured to use Movies as the dataset" do
+    context "when MSFL is configured to use Movie as the dataset" do
 
       subject(:mut) { test_instance.type_conforms? obj, field }
 

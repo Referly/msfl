@@ -1,3 +1,4 @@
+require 'set'
 module MSFL
   module Types
     class Set < ::Set

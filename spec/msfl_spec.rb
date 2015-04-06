@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'msfl/datasets/movies'
+require 'msfl/datasets/movie'
 describe "MSFL" do
 
   let(:json_encoded_msfl) do
@@ -71,8 +71,8 @@ describe "MSFL" do
   let(:validator) { MSFL::Validators::Semantic.new }
 
   it "is configured using a block" do
-    MSFL.configure(reset: true) { |configuration| configuration.datasets = [MSFL::Datasets::Movies] }
-    expect(MSFL.configuration.datasets).to eq [MSFL::Datasets::Movies]
+    MSFL.configure(reset: true) { |configuration| configuration.datasets = [MSFL::Datasets::Movie] }
+    expect(MSFL.configuration.datasets).to eq [MSFL::Datasets::Movie]
   end
 
   it "parses json encoded MSFL" do
@@ -80,12 +80,12 @@ describe "MSFL" do
   end
 
   it "rejects invalid MSFL filters" do
-    MSFL.configure(reset: true) { |conf| conf.datasets = [MSFL::Datasets::Movies] }
+    MSFL.configure(reset: true) { |conf| conf.datasets = [MSFL::Datasets::Movie] }
     expect(validator.validate invalid_ruby_encoded_msfl).to be false
   end
 
   it "accepts valid MSFL filters" do
-    MSFL.configure(reset: true) { |conf| conf.datasets = [MSFL::Datasets::Movies] }
+    MSFL.configure(reset: true) { |conf| conf.datasets = [MSFL::Datasets::Movie] }
     expect(validator.validate ruby_encoded_msfl).to be true
   end
 end
