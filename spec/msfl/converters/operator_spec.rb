@@ -140,6 +140,24 @@ describe "MSFL::Converters::Operator" do
 
     let(:expected) { raise ArgumentError, "You are expected to define the expected value" }
 
+    context "when the argument is an Array" do
+
+      let(:arg) { ["foo", "bar"] }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+
+    context "when the argument is a Hash containing an Array" do
+
+      let(:arg) { { and: [ { foo: 1 }, { bar: 2 } ] } }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+
     context "when there is not an implicit BETWEEN" do
 
       ["foo", { foo: "bar" }, 123, 56.12, :aaaah].each do |arg|
@@ -255,9 +273,9 @@ describe "MSFL::Converters::Operator" do
     end
   end
 
-  describe "#implicit_and_to_explicit" do
+  describe "#implicit_and_to_explicit_recursively" do
 
-    subject(:mut) { test_instance.implicit_and_to_explicit_recursively arg }
+    subject { test_instance.implicit_and_to_explicit_recursively arg }
 
     let(:test_instance) { MSFL::Converters::Operator.new }
 
@@ -274,7 +292,7 @@ describe "MSFL::Converters::Operator" do
         let(:arg) { 50 }
 
         it "is the arg unchanged" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
 
@@ -283,7 +301,7 @@ describe "MSFL::Converters::Operator" do
         let(:arg) { { gte: 1000 }  }
 
         it "is the arg unchanged" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
 
@@ -292,7 +310,7 @@ describe "MSFL::Converters::Operator" do
         let(:arg) { { value: { gte: 1000 } } }
 
         it "is the arg unchanged" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
 
@@ -310,7 +328,7 @@ describe "MSFL::Converters::Operator" do
                                                    ])}}
 
       it "converts the implicit AND to an explicit AND" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
       end
     end
 
@@ -325,7 +343,7 @@ describe "MSFL::Converters::Operator" do
                                                    ])}}
 
       it "converts the implicit AND to an explicit AND" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
       end
     end
 
@@ -347,7 +365,7 @@ describe "MSFL::Converters::Operator" do
         end
 
         it "converts both of the implicit ANDs to explicit ANDs" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
     end
@@ -375,14 +393,65 @@ describe "MSFL::Converters::Operator" do
       end
 
       it "converts all of the implicit ANDs" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
+      end
+    end
+
+    context "when the implicit AND is under an MSFL::Types::Set" do
+
+      let(:arg) do
+        {
+            foo: MSFL::Types::Set.new([
+                                          { bar: { gte: 1, lte: 5 } }
+                                      ])
+        }
+      end
+
+      let(:expected) do
+        {
+            foo: MSFL::Types::Set.new([
+                                          { and: MSFL::Types::Set.new([
+                                                                          { bar: { gte: 1 } },
+                                                                          { bar: { lte: 5 } }
+                                                                      ])}
+                                      ])
+        }
+      end
+
+      it "converts the implicit AND" do
+        expect(subject).to eq expected
+      end
+    end
+
+    context "when the implict AND is inside of an Array" do
+
+      let(:arg) do
+        { and: [ { foo: 1 }, { bar: 2 } ] }
+      end
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+
+    context "when the implict AND is inside of an Array that is inside of an MSFL::Types::Set" do
+
+      let(:arg) do
+        { foo: MSFL::Types::Set.new([
+                                        { bar: [{ score: { gte: 1, lte: 5 } }, "efg"] }
+                                    ])
+        }
+      end
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
       end
     end
   end
 
   describe "#between_to_gte_lte_recursively" do
 
-    subject(:mut) { test_instance.between_to_gte_lte_recursively arg }
+    subject { test_instance.between_to_gte_lte_recursively arg }
 
     let(:test_instance) { MSFL::Converters::Operator.new }
 
@@ -404,7 +473,7 @@ describe "MSFL::Converters::Operator" do
           let(:arg) { item }
 
           it "is equal to the argument" do
-            expect(mut).to eq arg
+            expect(subject).to eq arg
           end
         end
       end
@@ -417,7 +486,7 @@ describe "MSFL::Converters::Operator" do
       let(:expected) { { foo: { gte: "2015-01-01", lte: "2015-04-01" } } }
 
       it "converts between clauses into anded gte / lte clauses" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
       end
 
       context "when the between clause is below the second level" do
@@ -441,7 +510,7 @@ describe "MSFL::Converters::Operator" do
         end
 
         it "recursively converts between clauses into anded gte / lte clauses" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
     end
@@ -453,7 +522,7 @@ describe "MSFL::Converters::Operator" do
       let(:expected) { MSFL::Types::Set.new([ { foo: { gte: 1, lte: 5 } } ]) }
 
       it "recursively converts between clauses into anded gte / lte clauses" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
       end
 
       context "when the between clause is below the second level" do
@@ -463,7 +532,7 @@ describe "MSFL::Converters::Operator" do
         let(:expected) { MSFL::Types::Set.new([ { and: MSFL::Types::Set.new([{ foo: { gte: 1, lte: 5} }, { bar: 123} ]) }]) }
 
         it "recursively converts between clauses into anded gte / lte clauses" do
-          expect(mut).to eq expected
+          expect(subject).to eq expected
         end
       end
     end
@@ -473,7 +542,7 @@ describe "MSFL::Converters::Operator" do
       let(:arg) { [ { foo: { between: { start: 1, end: 5 } } } ] }
 
       it "raises an ArgumentError" do
-        expect { mut }.to raise_error ArgumentError
+        expect { subject }.to raise_error ArgumentError
       end
     end
 
@@ -500,7 +569,7 @@ describe "MSFL::Converters::Operator" do
       end
 
       it "recursively converts between clauses into anded gte / lte clauses" do
-        expect(mut).to eq expected
+        expect(subject).to eq expected
       end
     end
   end
