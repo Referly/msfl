@@ -68,3 +68,16 @@ for types to be defined.
 After parsing a MSFL filter it can be validated. Currently the validation is primitive. The intent is to enable
 semantic validation on a per dataset basis. This will allow per attribute validations to be setup by the consumer
 of this gem, which will be run automatically during validation.
+
+## Frameworks
+
+### Sinatra
+
+There are several helper methods for using this gem with Sinatra. You can register the helpers in your Sinatra app
+by adding the following inside of your application's class.
+
+```
+# This should actually be Sinatra::MSFL but there are some namespacing issues with MSFL currently that prevented
+# this from being the v0 implementation. This will change in the near future.
+register MSFL::Sinatra
+```
