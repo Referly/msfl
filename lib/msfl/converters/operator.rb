@@ -116,8 +116,9 @@ module MSFL
               if obj[first_key].is_a?(Hash)
                 result = implicit_and_to_explicit_recursively obj[first_key], first_key
               elsif obj[first_key].is_a? MSFL::Types::Set
-                # This situation occurs when there are nested logical operators
-                # obj is a hash, with one key that is not a binary operator which has a value that is a MSFL::Types::Set
+                # When an implicit and occurs under an MSFL::Types::Set when the key for the value which is the set
+                # is not a binary or logical operator. This doesn't happen in known current cases.
+                # ex. => { foo: [ { bar: { gte: 1, lte: 5 } } ] }
                 result = Hash.new
                 result[first_key] = recurse_through_set :implicit_and_to_explicit_recursively, obj[first_key]
               elsif obj[first_key].is_a? Array
