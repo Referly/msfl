@@ -29,22 +29,22 @@ I'm not actually sure this is correct, it is definitely not comprehensive as it 
                 |   number
                 |   boolean
                 |   filter
-                |   set;
+                |   set ;
 
     word        =   '"' , character , { character } , '"' ;
 
-    number      =   integer | decimal
+    number      =   integer | decimal ;
 
     integer     =   [ "-" ] , digit , { digit } ;
 
     decimal     =   integer
-                |   { integer } , "." , { digit }
+                |   { integer } , "." , { digit } ;
 
-    boolean     =   "true" | "false"
+    boolean     =   "true" | "false" ;
 
     character   =   letter
                 |   digit
-                |   symbol
+                |   symbol ;
 
     letter      =   "A" | "B" | "C" | "D" | "E" | "F" | "G"
                 |   "H" | "I" | "J" | "K" | "L" | "M" | "N"
@@ -57,7 +57,7 @@ I'm not actually sure this is correct, it is definitely not comprehensive as it 
 
     digit       =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
-    symbol      =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&"
+    symbol      =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
 ```
 range_op = between;
 between = "{" field ":" between_body | "{" "\"between\"" ":" between_body "}";
