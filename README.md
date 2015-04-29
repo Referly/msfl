@@ -11,14 +11,54 @@ MSFL is a context-free language. The context-free grammar is defined below.
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
 
 
-    <filter>    ::= <range_op>
-                |   <binary_op>
-                |   <set_op>
+    filter      =   range_op
+                |   binary_op
+                |   set_op ;
+
+    set_op      =   and
+                |   or ;
+
+    set         =   "[" , field , { field } , "]"
+                |   "[" , filter , { filter } , "]" ;
+
+    and         =   "{" , "and" , ":" , set , "}" ;
+
+    or          =   "{" , "or" , ":" , set , "}" ;
+
+    field       =   word
+                |   number
+                |   boolean
+                |   filter
+                |   set;
+
+    word        =   '"' , character , { character } , '"' ;
+
+    number      =   integer | decimal
+
+    integer     =   [ "-" ] , digit , { digit } ;
+
+    decimal     =   integer
+                |   { integer } , "." , { digit }
+
+    boolean     =   "true" | "false"
+
+    character   =   letter
+                |   digit
+                |   symbol
+
+    letter      =   "A" | "B" | "C" | "D" | "E" | "F" | "G"
+                |   "H" | "I" | "J" | "K" | "L" | "M" | "N"
+                |   "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+                |   "V" | "W" | "X" | "Y" | "Z"
+                |   "a" | "b" | "c" | "d" | "e" | "f" | "g"
+                |   "h" | "i" | "j" | "k" | "l" | "m" | "n"
+                |   "o" | "p" | "q" | "r" | "s" | "t" | "u"
+                |   "v" | "w" | "x" | "y" | "z" ;
+
+    digit       =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+    symbol      =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&"
 ```
-set_op = and | or
-and = "{" "\"and\"" ":" list "}"
-or = "{" "\"or\"" ":" list "}"
-list = "[" filter? | (filter ("," filter)*) "]";
 range_op = between;
 between = "{" field ":" between_body | "{" "\"between\"" ":" between_body "}";
 between_body = "{" "\"start\"" ":" between_start "," "\"end\"" ":" between_end "}";
