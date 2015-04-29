@@ -11,59 +11,75 @@ MSFL is a context-free language. The context-free grammar is defined below.
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
 
 
-    filter      =   range_op
-                |   binary_op
-                |   set_op ;
+    filter          =   range_op
+                    |   binary_op
+                    |   set_op ;
 
-    set_op      =   and
-                |   or ;
+    set_op          =   and
+                    |   or ;
 
-    set         =   "[" , { field } , "]"
-                |   "[" , { filter } , "]" ;
+    set             =   "[" , { field } , "]"
+                    |   "[" , { filter } , "]" ;
 
-    and         =   "{" , "and" , ":" , set , "}" ;
+    and             =   "{" , "and" , ":" , set , "}" ;
 
-    or          =   "{" , "or" , ":" , set , "}" ;
+    or              =   "{" , "or" , ":" , set , "}" ;
 
-    field       =   word
-                |   number
-                |   boolean
-                |   filter
-                |   set ;
+    range_op        =   between ;
 
-    word        =   '"' , character , { character } , '"' ;
+    between         =   "{" , field , ":" , start_end , "}"
+                    |   "{" , field , ":" , between_body , "}" ;
 
-    number      =   integer | decimal ;
+    between_body    =   "{" , "between" , ":" , start_end , "}" ;
 
-    integer     =   [ "-" ] , digit , { digit } ;
+    start_end       =   "{" , "start" , ":" , start , "," , "end" , ":" , end , "}" ;
 
-    decimal     =   integer
-                |   { integer } , "." , { digit } ;
+    range_field     =   number | date | datetime | time ;
 
-    boolean     =   "true" | "false" ;
+    start           =   range_field ;
 
-    character   =   letter
-                |   digit
-                |   symbol ;
+    end             =   range_field ;
 
-    letter      =   "A" | "B" | "C" | "D" | "E" | "F" | "G"
-                |   "H" | "I" | "J" | "K" | "L" | "M" | "N"
-                |   "O" | "P" | "Q" | "R" | "S" | "T" | "U"
-                |   "V" | "W" | "X" | "Y" | "Z"
-                |   "a" | "b" | "c" | "d" | "e" | "f" | "g"
-                |   "h" | "i" | "j" | "k" | "l" | "m" | "n"
-                |   "o" | "p" | "q" | "r" | "s" | "t" | "u"
-                |   "v" | "w" | "x" | "y" | "z" ;
+    field           =   word
+                    |   range_field
+                    |   boolean
+                    |   filter
+                    |   set ;
 
-    digit       =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+    word            =   '"' , character , { character } , '"' ;
 
-    symbol      =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
+    number          =   integer | decimal ;
+
+    integer         =   [ "-" ] , digit , { digit } ;
+
+    decimal         =   integer
+                    |   { integer } , "." , { digit } ;
+
+    boolean         =   "true" | "false" ;
+
+    date            =   ? ISO 8601 date format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    datetime        =   ? ISO 8601 combined date and time format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    time            =   ? ISO 8601 time format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    character       =   letter
+                    |   digit
+                    |   symbol ;
+
+    letter          =   "A" | "B" | "C" | "D" | "E" | "F" | "G"
+                    |   "H" | "I" | "J" | "K" | "L" | "M" | "N"
+                    |   "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+                    |   "V" | "W" | "X" | "Y" | "Z"
+                    |   "a" | "b" | "c" | "d" | "e" | "f" | "g"
+                    |   "h" | "i" | "j" | "k" | "l" | "m" | "n"
+                    |   "o" | "p" | "q" | "r" | "s" | "t" | "u"
+                    |   "v" | "w" | "x" | "y" | "z" ;
+
+    digit           =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+    symbol          =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
 ```
-range_op = between;
-between = "{" field ":" between_body | "{" "\"between\"" ":" between_body "}";
-between_body = "{" "\"start\"" ":" between_start "," "\"end\"" ":" between_end "}";
-between_start = integer | double | date | datetime | time;
-between_end = integer | double | date | datetime | time;
 binary_op = comparison | containment;
 comparison = "{" field ":" "{" comparison_op ":" atom "}" "}";
 field = "\"" ALPHANUMERIC+ "\"";
