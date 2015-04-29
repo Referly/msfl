@@ -18,8 +18,8 @@ I'm not actually sure this is correct, it is definitely not comprehensive as it 
     set_op      =   and
                 |   or ;
 
-    set         =   "[" , field , { field } , "]"
-                |   "[" , filter , { filter } , "]" ;
+    set         =   "[" , { field } , "]"
+                |   "[" , { filter } , "]" ;
 
     and         =   "{" , "and" , ":" , set , "}" ;
 
