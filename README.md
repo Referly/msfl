@@ -10,8 +10,11 @@ MSFL is a context-free language. The context-free grammar is defined below.
 
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
 
+
+    <filter>    ::= <range_op>
+                |   <binary_op>
+                |   <set_op>
 ```
-filter = range_op | binary_op | set_op
 set_op = and | or
 and = "{" "\"and\"" ":" list "}"
 or = "{" "\"or\"" ":" list "}"
