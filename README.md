@@ -9,53 +9,92 @@ Contains serializers and validators (and perhaps other) MSFL goodies
 MSFL is a context-free language. The context-free grammar is defined below.
 
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
+```
+binary_op = comparison | containment;
 
+
+containment = "{" field ":" "{" "\"in\"" ":" atom_list "}" "}";
+atom = string | integer | double | boolean | date | datetime | time;
+atom_list = "[" atom? | (atom ("," atom)*) "]";
+```
+
+This still isn't right as comparison and containments can actually be mixed in a filter
 
     filter          =   range_op
                     |   binary_op
                     |   set_op ;
 
+    range_op        =   between ;
+
+    binary_op       =   comparison
+                    |   containment ;
+
+    comparison      =   left_curly , comparison_body , { comma , comparison_body } , right_curly ;
+
+    comparison_body =   word , colon , value
+                    |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
+
+    comparison_expr =   comparison_op , colon , value
+
+    comparison_op   =   "lt"
+                    |   "gt"
+                    |   "lte"
+                    |   "gte"
+                    |   "eq"
+
+    containment     =   left_curly , word , colon ,
+
     set_op          =   and
                     |   or ;
 
-    set             =   "[" , { field } , "]"
-                    |   "[" , { filter } , "]" ;
+    filters         =   left_square , { filter } , right_square ;
 
-    and             =   "{" , "and" , ":" , set , "}" ;
+    values          =   left_square , { value } , right_square ;
 
-    or              =   "{" , "or" , ":" , set , "}" ;
+    and             =   left_curly , "and" , colon , filters , right_curly ;
 
-    range_op        =   between ;
+    or              =   left_curly , "or" , colon , filters , right_curly ;
 
-    between         =   "{" , field , ":" , start_end , "}"
-                    |   "{" , field , ":" , between_body , "}" ;
+    between         =   left_curly , value , colon , start_end , right_curly
+                    |   left_curly , value , colon , between_body , right_curly ;
 
-    between_body    =   "{" , "between" , ":" , start_end , "}" ;
+    between_body    =   left_curly , "between" , colon , start_end , right_curly ;
 
-    start_end       =   "{" , "start" , ":" , start , "," , "end" , ":" , end , "}" ;
+    start_end       =   left_curly , start_expr , comma , end_expr , right_curly ;
 
-    range_field     =   number | date | datetime | time ;
+    start_expr      =   "start" , colon , range_value
 
-    start           =   range_field ;
+    end_expr        =   "end" , colon , range_value
 
-    end             =   range_field ;
+    range_value     =   number
+                    |   date
+                    |   datetime
+                    |   time ;
 
-    field           =   word
-                    |   range_field
-                    |   boolean
-                    |   filter
-                    |   set ;
+    value           =   word
+                    |   range_value
+                    |   boolean ;
 
-    word            =   '"' , character , { character } , '"' ;
+    word            =   double_quote , character , { character } , double_quote ;
 
     number          =   integer | decimal ;
 
-    integer         =   [ "-" ] , digit , { digit } ;
+    integer         =   [ hyphen ] , digit , { digit } ;
 
     decimal         =   integer
-                    |   { integer } , "." , { digit } ;
+                    |   { integer } , dot , { digit } ;
 
-    boolean         =   "true" | "false" ;
+    boolean         =   true | false ;
+
+    true            =   "true"
+                    |   double_quote , "true" , double_quote
+                    |   "1"
+                    |   double_quote , "1" , double_quote ;
+
+    false           =   "false"
+                    |   double_quote , "false" , double_quote
+                    |   "0"
+                    |   double_quote , "0" , double_quote ;
 
     date            =   ? ISO 8601 date format http://en.wikipedia.org/wiki/ISO_8601 ? ;
 
@@ -79,15 +118,27 @@ I'm not actually sure this is correct, it is definitely not comprehensive as it 
     digit           =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
     symbol          =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
-```
-binary_op = comparison | containment;
-comparison = "{" field ":" "{" comparison_op ":" atom "}" "}";
-field = "\"" ALPHANUMERIC+ "\"";
-comparison_op = "lt" | "gt" | "lte" | "gte" | "eq";
-containment = "{" field ":" "{" "\"in\"" ":" atom_list "}" "}";
-atom = string | integer | double | boolean | date | datetime | time;
-atom_list = "[" atom? | (atom ("," atom)*) "]";
-```
+
+    left_curly      =   "{"
+
+    right_curly     =   "}"
+
+    left_square     =   "["
+
+    right_square    =   "]"
+
+    comma           =   ","
+
+    hyphen          =   "-"
+
+    colon           =   ":"
+
+    double_quote    =   '"'
+
+    dot             =   "."
+
+
+
 
 ## Configuration
 
