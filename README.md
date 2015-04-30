@@ -9,14 +9,6 @@ Contains serializers and validators (and perhaps other) MSFL goodies
 MSFL is a context-free language. The context-free grammar is defined below.
 
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
-```
-binary_op = comparison | containment;
-
-
-containment = "{" field ":" "{" "\"in\"" ":" atom_list "}" "}";
-atom = string | integer | double | boolean | date | datetime | time;
-atom_list = "[" atom? | (atom ("," atom)*) "]";
-```
 
 This still isn't right as comparison and containments can actually be mixed in a filter
 
@@ -34,7 +26,7 @@ This still isn't right as comparison and containments can actually be mixed in a
     comparison_body =   word , colon , value
                     |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
 
-    comparison_expr =   comparison_op , colon , value
+    comparison_expr =   double_quote , comparison_op , double_quote , colon , value
 
     comparison_op   =   "lt"
                     |   "gt"
@@ -42,7 +34,7 @@ This still isn't right as comparison and containments can actually be mixed in a
                     |   "gte"
                     |   "eq"
 
-    containment     =   left_curly , word , colon ,
+    containment     =   left_curly , word , colon , left_curly , double_quote , "in" , double_quote , colon , values , right_curly , right_curly
 
     set_op          =   and
                     |   or ;
@@ -51,20 +43,20 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     values          =   left_square , { value } , right_square ;
 
-    and             =   left_curly , "and" , colon , filters , right_curly ;
+    and             =   left_curly , double_quote , "and" , double_quote , colon , filters , right_curly ;
 
-    or              =   left_curly , "or" , colon , filters , right_curly ;
+    or              =   left_curly , double_quote , "or" , double_quote , colon , filters , right_curly ;
 
     between         =   left_curly , value , colon , start_end , right_curly
                     |   left_curly , value , colon , between_body , right_curly ;
 
-    between_body    =   left_curly , "between" , colon , start_end , right_curly ;
+    between_body    =   left_curly , double_quote , "between" , double_quote , colon , start_end , right_curly ;
 
     start_end       =   left_curly , start_expr , comma , end_expr , right_curly ;
 
-    start_expr      =   "start" , colon , range_value
+    start_expr      =   double_quote , "start" , double_quote , colon , range_value
 
-    end_expr        =   "end" , colon , range_value
+    end_expr        =   double_quote , "end" , double_quote , colon , range_value
 
     range_value     =   number
                     |   date
