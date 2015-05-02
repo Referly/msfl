@@ -26,15 +26,15 @@ This still isn't right as comparison and containments can actually be mixed in a
     comparison_body =   word , colon , value
                     |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
 
-    comparison_expr =   double_quote , comparison_op , double_quote , colon , value
+    comparison_expr =   double_quote , comparison_op , double_quote , colon , value ;
 
     comparison_op   =   "lt"
                     |   "gt"
                     |   "lte"
                     |   "gte"
-                    |   "eq"
+                    |   "eq" ;
 
-    containment     =   left_curly , word , colon , left_curly , double_quote , "in" , double_quote , colon , values , right_curly , right_curly
+    containment     =   left_curly , word , colon , left_curly , double_quote , "in" , double_quote , colon , values , right_curly , right_curly ;
 
     set_op          =   and
                     |   or ;
@@ -54,9 +54,9 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     start_end       =   left_curly , start_expr , comma , end_expr , right_curly ;
 
-    start_expr      =   double_quote , "start" , double_quote , colon , range_value
+    start_expr      =   double_quote , "start" , double_quote , colon , range_value ;
 
-    end_expr        =   double_quote , "end" , double_quote , colon , range_value
+    end_expr        =   double_quote , "end" , double_quote , colon , range_value ;
 
     range_value     =   number
                     |   date
@@ -111,23 +111,23 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     symbol          =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
 
-    left_curly      =   "{"
+    left_curly      =   "{" ;
 
-    right_curly     =   "}"
+    right_curly     =   "}" ;
 
-    left_square     =   "["
+    left_square     =   "[" ;
 
-    right_square    =   "]"
+    right_square    =   "]" ;
 
-    comma           =   ","
+    comma           =   "," ;
 
-    hyphen          =   "-"
+    hyphen          =   "-" ;
 
-    colon           =   ":"
+    colon           =   ":" ;
 
-    double_quote    =   '"'
+    double_quote    =   '"' ;
 
-    dot             =   "."
+    dot             =   "." ;
 
 
 
