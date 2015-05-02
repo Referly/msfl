@@ -18,12 +18,12 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     range_op        =   between ;
 
-    binary_op       =   comparison
+    binary_op       =   comparisons
                     |   containment ;
 
-    comparison      =   left_curly , comparison_body , { comma , comparison_body } , right_curly ;
+    comparisons     =   left_curly , comparison , { comma , comparison } , right_curly ;
 
-    comparison_body =   word , colon , value
+    comparison      =   word , colon , value
                     |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
 
     comparison_expr =   double_quote , comparison_op , double_quote , colon , value ;
