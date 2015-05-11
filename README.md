@@ -10,25 +10,127 @@ MSFL is a context-free language. The context-free grammar is defined below.
 
 I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
 
-```
-filter = range_op | binary_op | set_op
-set_op = and | or
-and = "{" "\"and\"" ":" list "}"
-or = "{" "\"or\"" ":" list "}"
-list = "[" filter? | (filter ("," filter)*) "]";
-range_op = between;
-between = "{" field ":" between_body | "{" "\"between\"" ":" between_body "}";
-between_body = "{" "\"start\"" ":" between_start "," "\"end\"" ":" between_end "}";
-between_start = integer | double | date | datetime | time;
-between_end = integer | double | date | datetime | time;
-binary_op = comparison | containment;
-comparison = "{" field ":" "{" comparison_op ":" atom "}" "}";
-field = "\"" ALPHANUMERIC+ "\"";
-comparison_op = "lt" | "gt" | "lte" | "gte" | "eq";
-containment = "{" field ":" "{" "\"in\"" ":" atom_list "}" "}";
-atom = string | integer | double | boolean | date | datetime | time;
-atom_list = "[" atom? | (atom ("," atom)*) "]";
-```
+This still isn't right as comparison and containments can actually be mixed in a filter
+
+    filter          =   range_op
+                    |   binary_op
+                    |   set_op ;
+
+    range_op        =   between ;
+
+    binary_op       =   comparisons
+                    |   containment ;
+
+    comparisons     =   left_curly , comparison , { comma , comparison } , right_curly ;
+
+    comparison      =   word , colon , value
+                    |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
+
+    comparison_expr =   double_quote , comparison_op , double_quote , colon , value ;
+
+    comparison_op   =   "lt"
+                    |   "gt"
+                    |   "lte"
+                    |   "gte"
+                    |   "eq" ;
+
+    containment     =   left_curly , word , colon , left_curly , double_quote , "in" , double_quote , colon , values , right_curly , right_curly ;
+
+    set_op          =   and
+                    |   or ;
+
+    filters         =   left_square , { filter } , right_square ;
+
+    values          =   left_square , { value } , right_square ;
+
+    and             =   left_curly , double_quote , "and" , double_quote , colon , filters , right_curly ;
+
+    or              =   left_curly , double_quote , "or" , double_quote , colon , filters , right_curly ;
+
+    between         =   left_curly , value , colon , start_end , right_curly
+                    |   left_curly , value , colon , between_body , right_curly ;
+
+    between_body    =   left_curly , double_quote , "between" , double_quote , colon , start_end , right_curly ;
+
+    start_end       =   left_curly , start_expr , comma , end_expr , right_curly ;
+
+    start_expr      =   double_quote , "start" , double_quote , colon , range_value ;
+
+    end_expr        =   double_quote , "end" , double_quote , colon , range_value ;
+
+    range_value     =   number
+                    |   date
+                    |   datetime
+                    |   time ;
+
+    value           =   word
+                    |   range_value
+                    |   boolean ;
+
+    word            =   double_quote , character , { character } , double_quote ;
+
+    number          =   integer | decimal ;
+
+    integer         =   [ hyphen ] , digit , { digit } ;
+
+    decimal         =   integer
+                    |   { integer } , dot , { digit } ;
+
+    boolean         =   true | false ;
+
+    true            =   "true"
+                    |   double_quote , "true" , double_quote
+                    |   "1"
+                    |   double_quote , "1" , double_quote ;
+
+    false           =   "false"
+                    |   double_quote , "false" , double_quote
+                    |   "0"
+                    |   double_quote , "0" , double_quote ;
+
+    date            =   ? ISO 8601 date format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    datetime        =   ? ISO 8601 combined date and time format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    time            =   ? ISO 8601 time format http://en.wikipedia.org/wiki/ISO_8601 ? ;
+
+    character       =   letter
+                    |   digit
+                    |   symbol ;
+
+    letter          =   "A" | "B" | "C" | "D" | "E" | "F" | "G"
+                    |   "H" | "I" | "J" | "K" | "L" | "M" | "N"
+                    |   "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+                    |   "V" | "W" | "X" | "Y" | "Z"
+                    |   "a" | "b" | "c" | "d" | "e" | "f" | "g"
+                    |   "h" | "i" | "j" | "k" | "l" | "m" | "n"
+                    |   "o" | "p" | "q" | "r" | "s" | "t" | "u"
+                    |   "v" | "w" | "x" | "y" | "z" ;
+
+    digit           =   "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+    symbol          =   "'" | "~" | "." | "_" | "-" | ":" | "?" | "/" | "=" | "@" | "&" ;
+
+    left_curly      =   "{" ;
+
+    right_curly     =   "}" ;
+
+    left_square     =   "[" ;
+
+    right_square    =   "]" ;
+
+    comma           =   "," ;
+
+    hyphen          =   "-" ;
+
+    colon           =   ":" ;
+
+    double_quote    =   '"' ;
+
+    dot             =   "." ;
+
+
+
 
 ## Configuration
 
