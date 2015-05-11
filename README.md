@@ -21,12 +21,12 @@ This still isn't right as comparison and containments can actually be mixed in a
     binary_op       =   comparisons
                     |   containment ;
 
-    comparisons     =   left_curly , comparison , { comma , comparison } , right_curly ;
+    comparisons     =   lc , comparison , { comma , comparison } , rc ;
 
     comparison      =   word , colon , value
-                    |   word , colon , left_curly , comparison_expr , { comma , comparison_expr } , right_curly ;
+                    |   word , colon , lc , comparison_expr , { comma , comparison_expr } , rc ;
 
-    comparison_expr =   double_quote , comparison_op , double_quote , colon , value ;
+    comparison_expr =   dq , comparison_op , dq , colon , value ;
 
     comparison_op   =   "lt"
                     |   "gt"
@@ -34,29 +34,29 @@ This still isn't right as comparison and containments can actually be mixed in a
                     |   "gte"
                     |   "eq" ;
 
-    containment     =   left_curly , word , colon , left_curly , double_quote , "in" , double_quote , colon , values , right_curly , right_curly ;
+    containment     =   lc , word , colon , lc , dq , "in" , dq , colon , values , rc , rc ;
 
     set_op          =   and
                     |   or ;
 
-    filters         =   left_square , { filter } , right_square ;
+    filters         =   ls , { filter } , rs ;
 
-    values          =   left_square , { value } , right_square ;
+    values          =   ls , { value } , rs ;
 
-    and             =   left_curly , double_quote , "and" , double_quote , colon , filters , right_curly ;
+    and             =   lc , dq , "and" , dq , colon , filters , rc ;
 
-    or              =   left_curly , double_quote , "or" , double_quote , colon , filters , right_curly ;
+    or              =   lc , dq , "or" , dq , colon , filters , rc ;
 
-    between         =   left_curly , value , colon , start_end , right_curly
-                    |   left_curly , value , colon , between_body , right_curly ;
+    between         =   lc , value , colon , start_end , rc
+                    |   lc , value , colon , between_body , rc ;
 
-    between_body    =   left_curly , double_quote , "between" , double_quote , colon , start_end , right_curly ;
+    between_body    =   lc , dq , "between" , dq , colon , start_end , rc ;
 
-    start_end       =   left_curly , start_expr , comma , end_expr , right_curly ;
+    start_end       =   lc , start_expr , comma , end_expr , rc ;
 
-    start_expr      =   double_quote , "start" , double_quote , colon , range_value ;
+    start_expr      =   dq , "start" , dq , colon , range_value ;
 
-    end_expr        =   double_quote , "end" , double_quote , colon , range_value ;
+    end_expr        =   dq , "end" , dq , colon , range_value ;
 
     range_value     =   number
                     |   date
@@ -67,7 +67,7 @@ This still isn't right as comparison and containments can actually be mixed in a
                     |   range_value
                     |   boolean ;
 
-    word            =   double_quote , character , { character } , double_quote ;
+    word            =   dq , character , { character } , dq ;
 
     number          =   integer | decimal ;
 
@@ -79,14 +79,14 @@ This still isn't right as comparison and containments can actually be mixed in a
     boolean         =   true | false ;
 
     true            =   "true"
-                    |   double_quote , "true" , double_quote
+                    |   dq , "true" , dq
                     |   "1"
-                    |   double_quote , "1" , double_quote ;
+                    |   dq , "1" , dq ;
 
     false           =   "false"
-                    |   double_quote , "false" , double_quote
+                    |   dq , "false" , dq
                     |   "0"
-                    |   double_quote , "0" , double_quote ;
+                    |   dq , "0" , dq ;
 
     date            =   ? ISO 8601 date format http://en.wikipedia.org/wiki/ISO_8601 ? ;
 
@@ -113,11 +113,19 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     left_curly      =   "{" ;
 
+    lc              =   left_curly ;
+
     right_curly     =   "}" ;
+
+    rc              =   right_curly ;
 
     left_square     =   "[" ;
 
+    ls              =   left_square ;
+
     right_square    =   "]" ;
+
+    rs              =   right_square ;
 
     comma           =   "," ;
 
@@ -126,6 +134,8 @@ This still isn't right as comparison and containments can actually be mixed in a
     colon           =   ":" ;
 
     double_quote    =   '"' ;
+
+    dq              =   double_quote ;
 
     dot             =   "." ;
 
