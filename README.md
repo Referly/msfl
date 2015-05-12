@@ -24,9 +24,9 @@ This still isn't right as comparison and containments can actually be mixed in a
     comparisons     =   lc , comparison , { comma , comparison } , rc ;
 
     comparison      =   word , colon , value
-                    |   word , colon , lc , comp_expr_list , rc ;
+                    |   word , colon , lc , comparison_list , rc ;
 
-    comp_expr_list  =   comparison_expr , { comma , comparison_expr } ;
+    comparison_list =   comparison_expr , { comma , comparison_expr } ;
 
     comparison_expr =   dq , comparison_op , dq , colon , value ;
 
