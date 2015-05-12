@@ -167,10 +167,6 @@ module MSFL
       def value_conforms?(value, field, errors = [])
         true
       end
-
-      def foreign?(field)
-
-      end
     end
   end
 end
