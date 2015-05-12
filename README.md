@@ -42,9 +42,9 @@ TODO add foreign_expr
 
     containment     =   word , colon , in_expr ;
 
-    and             =   dq , "and" , dq , colon , filters ;
+    and             =   and_op , colon , filters ;
 
-    or              =   dq , "or" , dq , colon , filters ;
+    or              =   or_op , colon , filters ;
 
     comparison      =   word , colon , value
                     |   word , colon , lc , comparison_list , rc ;
@@ -100,6 +100,10 @@ TODO add foreign_expr
     gte_op          =   dq , "gte" , dq ;
 
     eq_op           =   dq , "eq" , dq ;
+
+    and_op          =   dq , "and" , dq ;
+
+    or_op           =   dq , "or" , dq ;
 
 
 
