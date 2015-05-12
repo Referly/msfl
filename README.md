@@ -36,7 +36,9 @@ This still isn't right as comparison and containments can actually be mixed in a
                     |   "gte"
                     |   "eq" ;
 
-    containment     =   lc , word , colon , lc , dq , "in" , dq , colon , values , rc , rc ;
+    containment     =   lc , word , colon , in_expr , rc ;
+
+    in_expr         =   lc , dq , "in" , dq , colon , values , rc ;
 
     set_op          =   and
                     |   or ;
