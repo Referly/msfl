@@ -1,5 +1,18 @@
 [![Circle CI](https://circleci.com/gh/Referly/msfl.svg?style=svg)](https://circleci.com/gh/Referly/msfl)
 
+# MSFL
+
+The Mattermark Semantic Filter Language is a language for _filtering_ data. It allows users to construct filters
+on sets of data in a Venn diagram like fashion. More formally it allows the user to create subsets of data.
+
+MSFL is different than other languages - it is _not_ a query language. It has no notion of concepts like _order_,
+_limit_, _offset_, _group_by_, or _having_.
+
+It does support faceted filtering through a vocabulary added in 1.2 which allows the user to define filters
+on the hyperset of the data. (In the non-hyper case all of the extra dimensions are simplified to constants.) If
+you don't know what faceted filtering is or this sounds overwhelming, just ignore this bit. When you get to the point
+that you need faceted filtering in your application then this will seem second nature.
+
 # Ruby Gem for the Mattermark Semantic Filter Language
 
 Contains serializers and validators (and perhaps other) MSFL goodies
