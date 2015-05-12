@@ -41,7 +41,11 @@ MSFL is a context-free language. The context-free grammar is defined below.
 
     partial_expr    =   partial_op , colon , partial ;
 
-    foreign_expr    =   word , colon , filter ;
+    foreign_expr    =   foreign_op , colon , foreign_filter ;
+    
+    foreign_filter  =   lc , dataset_expr , comma , partial_filter , rc ;
+    
+    dataset_expr    =   dataset_op , colon , word ;
 
     partial         =   lc , given_expr , comma , partial_filter , rc ;
 
@@ -118,6 +122,10 @@ MSFL is a context-free language. The context-free grammar is defined below.
     and_op          =   dq , "and" , dq ;
 
     or_op           =   dq , "or" , dq ;
+    
+    foreign_op      =   dq , "foreign" , dq ;
+    
+    dataset_op      =   dq , "dataset" , dq ;
 
 
 

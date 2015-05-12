@@ -38,10 +38,10 @@ describe "MSFL::Parsers::JSON" do
 
       # The test scenario here is if we are limiting the set of cars by person criteria (only cars owned by people over 25)
 
-      let(:test_json) { '{"person":{"age":{"gte":25}}}' }
+      let(:test_json) { '{"foreign":{"dataset":"person","filter":{"age":{"gte":25}}}}' }
 
       it "is an equivalent Ruby hash" do
-        expect(mut).to eq({ person: { age: { gte: 25 } } })
+        expect(mut).to eq({foreign: { dataset: "person", filter: { age: { gte: 25 } } } })
       end
 
     end
