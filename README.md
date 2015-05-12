@@ -8,11 +8,11 @@ Contains serializers and validators (and perhaps other) MSFL goodies
 
 MSFL is a context-free language. The context-free grammar is defined below.
 
-I'm not actually sure this is correct, it is definitely not comprehensive as it skips over the shortcut functionality.
-
 This still isn't right as comparison and containments can actually be mixed in a filter
 
-    filter          =   range_op
+    filter          =   lc , { filter_op } , rc ;
+
+    filter_op       =   range_op
                     |   binary_op
                     |   set_op ;
 
@@ -21,7 +21,19 @@ This still isn't right as comparison and containments can actually be mixed in a
     binary_op       =   comparisons
                     |   containment ;
 
-    comparisons     =   lc , comparison , { comma , comparison } , rc ;
+    set_op          =   and
+                    |   or ;
+
+    between         =   value , colon , start_end
+                    |   value , colon , between_body ;
+
+    comparisons     =   comparison , { comma , comparison } ;
+
+    containment     =   word , colon , in_expr ;
+
+    and             =   dq , "and" , dq , colon , filters ;
+
+    or              =   dq , "or" , dq , colon , filters ;
 
     comparison      =   word , colon , value
                     |   word , colon , lc , comparison_list , rc ;
@@ -36,23 +48,11 @@ This still isn't right as comparison and containments can actually be mixed in a
                     |   "gte"
                     |   "eq" ;
 
-    containment     =   lc , word , colon , in_expr , rc ;
-
     in_expr         =   lc , dq , "in" , dq , colon , values , rc ;
-
-    set_op          =   and
-                    |   or ;
 
     filters         =   ls , { filter } , rs ;
 
     values          =   ls , { value } , rs ;
-
-    and             =   lc , dq , "and" , dq , colon , filters , rc ;
-
-    or              =   lc , dq , "or" , dq , colon , filters , rc ;
-
-    between         =   lc , value , colon , start_end , rc
-                    |   lc , value , colon , between_body , rc ;
 
     between_body    =   lc , dq , "between" , dq , colon , start_end , rc ;
 
