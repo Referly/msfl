@@ -50,6 +50,20 @@ module MSFL
         raise NoMethodError, "Descendants of MSFL::Datasets::Base are required to implement the #fields method"
       end
 
+      # The descendant class SHOULD override this method, in future versions of MSFL it is execpted to
+      # become a MUST for descendants to override.
+      #
+      # The method defines an array of symbols, indicating the names of foreign datasets that this data
+      # set supports filtering on
+      #
+      # Example a Person might have a foreign of :location where the Location dataset should be loaded and
+      # used for evaluating filters inside of the foreign (this prevents having to duplicate expression semantics
+      # across many datasets - the Location semantics are defined only in the Location dataset and loaded in
+      # when needed by other datasets)
+      def foreigns
+        []
+      end
+
       # The descendant class may override this method to control the operators that are supported for the dataset
       #  - Note that this can only be used to reduce the number of supported operators (you can't add new operators
       #    here, without first adding them to MSFL::Validators::Definitions::HashKey#hash_key_operators)
@@ -152,6 +166,10 @@ module MSFL
       # @return [Bool] true if no new errors are encountered, false otherwise
       def value_conforms?(value, field, errors = [])
         true
+      end
+
+      def foreign?(field)
+
       end
     end
   end
