@@ -7,8 +7,12 @@ module MSFL
     class Person < ::MSFL::Datasets::Base
       register_dataset
 
+      def foreigns
+        [:car]
+      end
+
       def fields
-        [:name, :gender, :age, :cars]
+        [:name, :gender, :age].concat foreigns
       end
     end
   end
