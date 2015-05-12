@@ -8,21 +8,32 @@ Contains serializers and validators (and perhaps other) MSFL goodies
 
 MSFL is a context-free language. The context-free grammar is defined below.
 
-This still isn't right as comparison and containments can actually be mixed in a filter
+TODO add foreign_expr
 
-    filter          =   lc , { filter_op } , rc ;
+    # EXPRESSIONS
 
-    filter_op       =   range_op
-                    |   binary_op
-                    |   set_op ;
+    filter          =   lc , { filter_expr } , rc ;
 
-    range_op        =   between ;
+    filter_expr     =   range_expr
+                    |   binary_expr
+                    |   set_expr
+                    |   partial_expr ;
 
-    binary_op       =   comparisons
+    range_expr      =   between ;
+
+    binary_expr     =   comparisons
                     |   containment ;
 
-    set_op          =   and
+    set_expr        =   and
                     |   or ;
+
+    partial_expr    =   partial_op , colon , partial ;
+
+    partial         =   lc , given_expr , comma , partial_filter , rc ;
+
+    given_expr      =   given_op , colon, filter ;
+
+    partial_filter  =   filter_op , colon , filter ;
 
     between         =   value , colon , start_end
                     |   value , colon , between_body ;
@@ -40,27 +51,55 @@ This still isn't right as comparison and containments can actually be mixed in a
 
     comparison_list =   comparison_expr , { comma , comparison_expr } ;
 
-    comparison_expr =   dq , comparison_op , dq , colon , value ;
+    comparison_expr =   comparison_op , colon , value ;
 
-    comparison_op   =   "lt"
-                    |   "gt"
-                    |   "lte"
-                    |   "gte"
-                    |   "eq" ;
-
-    in_expr         =   lc , dq , "in" , dq , colon , values , rc ;
+    in_expr         =   lc , in_op , colon , values , rc ;
 
     filters         =   ls , { filter } , rs ;
 
     values          =   ls , { value } , rs ;
 
-    between_body    =   lc , dq , "between" , dq , colon , start_end , rc ;
+    between_body    =   lc , between_op , colon , start_end , rc ;
 
     start_end       =   lc , start_expr , comma , end_expr , rc ;
 
-    start_expr      =   dq , "start" , dq , colon , range_value ;
+    start_expr      =   start_op , colon , range_value ;
 
-    end_expr        =   dq , "end" , dq , colon , range_value ;
+    end_expr        =   end_op , colon , range_value ;
+
+    # OPERATORS
+
+    partial_op      =   dq , "partial" , dq ;
+
+    given_op        =   dq , "given" , dq ;
+
+    filter_op       =   dq , "filter" , dq ;
+
+    in_op           =   dq , "in" , dq ;
+
+    between_op      =   dq , "between" , dq ;
+
+    start_op        =   dq , "start" , dq ;
+
+    end_op          =   dq , "end" , dq ;
+
+    comparison_op   =   lt_op
+                    |   gt_op
+                    |   lte_op
+                    |   gte_op
+                    |   eq_op ;
+
+    lt_op           =   dq , "lt" , dq ;
+
+    gt_op           =   dq , "gt" , dq ;
+
+    lte_op          =   dq , "lte" , dq ;
+
+    gte_op          =   dq , "gte" , dq ;
+
+    eq_op           =   dq , "eq" , dq ;
+
+    # VALUES AND TYPES
 
     range_value     =   number
                     |   date
