@@ -8,8 +8,6 @@ Contains serializers and validators (and perhaps other) MSFL goodies
 
 MSFL is a context-free language. The context-free grammar is defined below.
 
-TODO add foreign_expr
-
     # EXPRESSIONS
 
     filter          =   lc , { filter_expr } , rc ;
@@ -17,7 +15,8 @@ TODO add foreign_expr
     filter_expr     =   range_expr
                     |   binary_expr
                     |   set_expr
-                    |   partial_expr ;
+                    |   partial_expr
+                    |   foreign_expr ;
 
     range_expr      =   between ;
 
@@ -28,6 +27,8 @@ TODO add foreign_expr
                     |   or ;
 
     partial_expr    =   partial_op , colon , partial ;
+
+    foreign_expr    =   word , colon , filter ;
 
     partial         =   lc , given_expr , comma , partial_filter , rc ;
 
@@ -231,6 +232,14 @@ for types to be defined.
 After parsing a MSFL filter it can be validated. Currently the validation is primitive. The intent is to enable
 semantic validation on a per dataset basis. This will allow per attribute validations to be setup by the consumer
 of this gem, which will be run automatically during validation.
+
+Validation works in the following order
+
+1. Grammar validation
+
+2. Dataset configured validation
+
+3. Dataset semantic validation
 
 ## Frameworks
 
