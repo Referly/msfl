@@ -13,7 +13,7 @@ module MSFL
 
         # Operators still needing parsing: ellipsis2, tilda
         def hash_key_operators
-          binary_operators.concat(logical_operators)
+          binary_operators.concat(logical_operators).concat(partial_operators)
         end
 
         def binary_operators
@@ -30,6 +30,15 @@ module MSFL
               :gt,          # >
               :gte,         # >=
               :neg,         # logical negation
+
+          ]
+        end
+
+        def partial_operators
+          [
+              :partial,     # faceted / aggregate
+              :given,       # given
+              :filter,      # explicit filter
           ]
         end
 

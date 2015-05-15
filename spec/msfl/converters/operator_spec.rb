@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "MSFL::Converters::Operator" do
+describe MSFL::Converters::Operator do
 
   describe "#run_conversions" do
 
@@ -571,6 +571,19 @@ describe "MSFL::Converters::Operator" do
       it "recursively converts between clauses into anded gte / lte clauses" do
         expect(subject).to eq expected
       end
+    end
+  end
+
+  describe "running conversions on a normal msfl filter containing a partial" do
+
+    subject { converter.run_conversions msfl }
+
+    let(:converter) { described_class.new }
+
+    let(:msfl) { { partial: { given: { make: "Toyota" }, filter: { avg_age: 10 } } } }
+
+    it "is unchanged" do
+      expect(subject).to eq msfl
     end
   end
 end

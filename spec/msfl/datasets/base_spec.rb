@@ -66,4 +66,13 @@ describe "MSFL::Datasets::Base" do
       expect(mut).to eq errors
     end
   end
+
+  describe "#foreigns" do
+
+    subject { test_instance.foreigns }
+
+    it "is intended to be overridden" do
+      expect(subject).to eq []
+    end
+  end
 end

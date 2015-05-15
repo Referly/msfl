@@ -109,6 +109,9 @@ module MSFL
             result = i_to_e_bin_op obj, parent_key
           elsif logical_operators.include?(first_key)
             result = i_to_e_log_op obj, parent_key
+          elsif first_key == :partial
+            result = { partial: { given: implicit_and_to_explicit_recursively(obj[:partial][:given]),
+                                  filter: implicit_and_to_explicit_recursively(obj[:partial][:filter]) } }
           else
             # the first key is not an operator
             # if there is only one key just assign the result of calling this method recursively on the value to the result for the key
