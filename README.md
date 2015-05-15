@@ -17,6 +17,50 @@ that you need faceted filtering in your application then this will seem second n
 
 Contains serializers and validators (and perhaps other) MSFL goodies
 
+# Converters
+
+One aspect of the msfl gem is the conversion of standard msfl into what we internally call NMSFL (normalized Mattermark
+Semantic Filter Language). NMSFL serves as an intermediate language in which some of the human friendly conveniences
+are replaced with a syntax that is easier for machines to parse.
+
+## A noop conversion
+```ruby
+require 'msfl'
+# Require one of the test datasets
+require 'msfl/datasets/car'
+
+msfl      = { make: "Chevy" }
+converter = MSFL::Converters::Operator.new
+nmsfl     = converter.run_conversions msfl
+
+=> {:make=>"Chevy"}
+```
+
+## A conversion from an implicit AND to an explicit one
+```ruby
+require 'msfl'
+# Require one of the test datasets
+require 'msfl/datasets/car'
+
+msfl      = { make: "Chevy", year: { gt: 2000 } }
+converter = MSFL::Converters::Operator.new
+nmsfl     = converter.run_conversions msfl
+
+=> {:and=>#<MSFL::Types::Set: {{:make=>"Chevy"}, {:year=>{:gt=>2000}}}>}
+```
+
+## A conversion from between to gte / lte
+```ruby
+require 'msfl'
+# Require one of the test datasets
+require 'msfl/datasets/car'
+
+msfl      = { year: { between: { start: 2010, end: 2015 } } }
+converter = MSFL::Converters::Operator.new
+nmsfl     = converter.run_conversions msfl
+
+=> {:and=>#<MSFL::Types::Set: {{:year=>{:gte=>2010}}, {:year=>{:lte=>2015}}}>}
+```
 ## EBNF
 
 MSFL is a context-free language. The context-free grammar is defined below.
