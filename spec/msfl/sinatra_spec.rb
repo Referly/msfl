@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'msfl/datasets/car'
+require 'msfl/datasets/person'
 
 
 describe "MSFL::Sinatra" do
@@ -93,5 +95,17 @@ describe "MSFL::Sinatra" do
     let(:params) { nil }
 
     it_behaves_like "an invocation of MSFL::Sinatra.validate"
+
+    context "when validating a foreign" do
+
+      context "when the foreign is valid" do
+
+        let(:params) { { dataset: :car, filter: filter } }
+
+        let(:filter) { { foreign: { dataset: 'person', filter: { age: { gte: 25 } } } } }
+
+        it { is_expected.to eq true }
+      end
+    end
   end
 end

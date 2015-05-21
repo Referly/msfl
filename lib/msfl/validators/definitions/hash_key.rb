@@ -4,7 +4,7 @@ module MSFL
       module HashKey
 
         def valid_hash_key?(key)
-          valid_hash_keys.include? key
+          self.dataset.has_operator?(key) || self.dataset.has_field?(key)
         end
 
         def valid_hash_keys
@@ -30,7 +30,9 @@ module MSFL
               :gt,          # >
               :gte,         # >=
               :neg,         # logical negation
-
+              :foreign,     # Defines a filter on a related item
+              :dataset,     # A foreign dataset
+              :filter,      # an explicit filter
           ]
         end
 

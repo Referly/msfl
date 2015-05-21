@@ -27,7 +27,7 @@ module MSFL
       def dataset_from(params)
         dataset_name = params[:dataset].to_sym unless params[:dataset].nil?
         dataset_name ||= nil
-        Datasets::Base.registered_datasets[dataset_name].new if Datasets::Base.registered_datasets.has_key?(dataset_name)
+        Datasets::Base.dataset_from dataset_name
       end
 
       # Creates a semantic validator instance that is ready to validate the dataset

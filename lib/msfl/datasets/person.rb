@@ -12,7 +12,7 @@ module MSFL
       end
 
       def fields
-        [:name, :gender, :age].concat foreigns
+        [:name, :gender, :age]
       end
     end
   end

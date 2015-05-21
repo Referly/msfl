@@ -12,7 +12,7 @@ module MSFL
       end
 
       def fields
-        [:make, :model, :year, :value].concat foreigns
+        [:make, :model, :year, :value]
       end
     end
   end
