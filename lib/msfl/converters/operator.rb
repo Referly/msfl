@@ -102,6 +102,7 @@ module MSFL
       #
       # @param obj [Object] the Hash that is an implicit and
       # @return [Hash] the resulting explicit hash
+      # @todo clean up the if elsif train
       def implicit_and_to_explicit_recursively(obj, parent_key = nil)
         if obj.is_a? Hash
           first_key = obj.keys.first
@@ -112,6 +113,9 @@ module MSFL
           elsif first_key == :partial
             result = { partial: { given: implicit_and_to_explicit_recursively(obj[:partial][:given]),
                                   filter: implicit_and_to_explicit_recursively(obj[:partial][:filter]) } }
+          elsif first_key == :foreign
+            result = { foreign: { dataset: implicit_and_to_explicit_recursively(obj[:foreign][:dataset]),
+                                  filter: implicit_and_to_explicit_recursively(obj[:foreign][:filter]) } }
           else
             # the first key is not an operator
             # if there is only one key just assign the result of calling this method recursively on the value to the result for the key

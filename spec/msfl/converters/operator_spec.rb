@@ -574,16 +574,28 @@ describe MSFL::Converters::Operator do
     end
   end
 
-  describe "running conversions on a normal msfl filter containing a partial" do
-
-    subject { converter.run_conversions msfl }
+  context "when running conversions on a msfl filter containing a specific type of filter" do
 
     let(:converter) { described_class.new }
 
-    let(:msfl) { { partial: { given: { make: "Toyota" }, filter: { avg_age: 10 } } } }
+    subject { converter.run_conversions msfl }
 
-    it "is unchanged" do
-      expect(subject).to eq msfl
+    describe "running conversions on a normal msfl filter containing a partial" do
+
+      let(:msfl) { { partial: { given: { make: "Toyota" }, filter: { avg_age: 10 } } } }
+
+      it "is unchanged" do
+        expect(subject).to eq msfl
+      end
+    end
+
+    describe "running conversion on a normal msfl filter containing a foreign" do
+
+      let(:msfl) { { foreign: { dataset: :person, filter: { age: 10 } } } }
+
+      it "is unchanged" do
+        expect(subject).to eq msfl
+      end
     end
   end
 end
