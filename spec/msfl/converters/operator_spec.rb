@@ -449,6 +449,20 @@ describe MSFL::Converters::Operator do
     end
   end
 
+  describe "#i_to_e_op" do
+
+    let(:hash) { { some_arbitrary_key: :foobar } }
+
+    subject { described_class.new.send(:i_to_e_op, hash) }
+
+    context "when the hash has a key that is not supported" do
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+  end
+
   describe "#between_to_gte_lte_recursively" do
 
     subject { test_instance.between_to_gte_lte_recursively arg }
