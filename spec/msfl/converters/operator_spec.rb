@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "MSFL::Converters::Operator" do
+describe MSFL::Converters::Operator do
 
   describe "#run_conversions" do
 
@@ -449,6 +449,20 @@ describe "MSFL::Converters::Operator" do
     end
   end
 
+  describe "#i_to_e_op" do
+
+    let(:hash) { { some_arbitrary_key: :foobar } }
+
+    subject { described_class.new.send(:i_to_e_op, hash) }
+
+    context "when the hash has a key that is not supported" do
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+  end
+
   describe "#between_to_gte_lte_recursively" do
 
     subject { test_instance.between_to_gte_lte_recursively arg }
@@ -570,6 +584,31 @@ describe "MSFL::Converters::Operator" do
 
       it "recursively converts between clauses into anded gte / lte clauses" do
         expect(subject).to eq expected
+      end
+    end
+  end
+
+  context "when running conversions on a msfl filter containing a specific type of filter" do
+
+    let(:converter) { described_class.new }
+
+    subject { converter.run_conversions msfl }
+
+    describe "running conversions on a normal msfl filter containing a partial" do
+
+      let(:msfl) { { partial: { given: { make: "Toyota" }, filter: { avg_age: 10 } } } }
+
+      it "is unchanged" do
+        expect(subject).to eq msfl
+      end
+    end
+
+    describe "running conversion on a normal msfl filter containing a foreign" do
+
+      let(:msfl) { { foreign: { dataset: :person, filter: { age: 10 } } } }
+
+      it "is unchanged" do
+        expect(subject).to eq msfl
       end
     end
   end

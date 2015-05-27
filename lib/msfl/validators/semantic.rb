@@ -73,10 +73,10 @@ module MSFL
           # Then make a recursive call to validate on the value so that it and its elements are validated
           #  later I might be able to optimize this by only making the recursive call for Sets and Hashes
           #
-          if dataset.operators.include? key
+          if dataset.has_operator? key
             dataset.validate_operator_conforms key, current_field, errors
             opts[:parent_operator] = key
-          elsif dataset.fields.include? key
+          elsif dataset.has_field? key
             current_field = key
             dataset.validate_type_conforms value, current_field, errors
             dataset.validate_value_conforms value, current_field, errors

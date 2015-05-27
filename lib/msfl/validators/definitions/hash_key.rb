@@ -4,7 +4,7 @@ module MSFL
       module HashKey
 
         def valid_hash_key?(key)
-          valid_hash_keys.include? key
+          self.dataset.has_operator?(key) || self.dataset.has_field?(key)
         end
 
         def valid_hash_keys
@@ -13,7 +13,7 @@ module MSFL
 
         # Operators still needing parsing: ellipsis2, tilda
         def hash_key_operators
-          binary_operators.concat(logical_operators)
+          binary_operators.concat(logical_operators).concat(partial_operators).concat(foreign_operators)
         end
 
         def binary_operators
@@ -33,8 +33,32 @@ module MSFL
           ]
         end
 
+        def partial_operators
+          [
+              :partial,     # faceted / aggregate
+              :given,       # given
+              :filter,      # explicit filter
+          ]
+        end
+
+        def foreign_operators
+          [
+              :foreign,     # Defines a filter on a related item
+              :dataset,     # A foreign dataset
+              :filter,      # an explicit filter
+          ]
+        end
+
         def logical_operators
           [:and, :or]
+        end
+
+        # Returns true if the argument is a valid operator
+        #
+        # @param symbol [Symbol] the value to check to see if it is an operator
+        # @return [Bool] true if the argument is a valid operator, false otherwise
+        def operator?(symbol)
+          hash_key_operators.include? symbol
         end
 
         # Returns true if all elements of arr are operators, false otherwise

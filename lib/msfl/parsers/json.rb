@@ -16,7 +16,7 @@ module MSFL
         obj
       end
 
-      # Converts Ruby Arrays is a partially parsed Ruby MSFL filter to MSFL::Types::Set objects
+      # Converts Ruby Arrays in a partially parsed Ruby MSFL filter to MSFL::Types::Set objects
       #
       # @param obj [Object] the object in which to convert Ruby Array objects to MSFL::Types::Set objects
       # @return [Object] the result of converting Ruby Arrays to MSFL::Types::Set objects

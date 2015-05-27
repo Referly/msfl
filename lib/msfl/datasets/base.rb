@@ -41,6 +41,17 @@ module MSFL
         MSFL::Datasets::Base.registered_datasets = registered_datasets
       end
 
+
+      # Returns a new instance of the specified dataset.
+      #
+      # @param dataset_name [Symbol] the name of the dataset to instantiate
+      # @return [MSFL::Datasets::Base, Nil] a new instance of the specified dataset, if it can be found, otherwise nil
+      def self.dataset_from(dataset_name)
+        klass = MSFL::Datasets::Base.registered_datasets[dataset_name]
+        dataset = klass.new if klass
+        dataset ||= nil
+      end
+
       # The descendant class MUST override this method otherwise all field validations will fail
       #
       # The method defines an array of symbols, indicating what fields are supported for the Dataset
@@ -50,6 +61,36 @@ module MSFL
         raise NoMethodError, "Descendants of MSFL::Datasets::Base are required to implement the #fields method"
       end
 
+      # Returns true if the specified field is valid directly or through a foreign dataset
+      #
+      # @param field_name [Symbol] the name of the field to check and see if the dataset supports it
+      # @return [Bool] true if the field is supported by the dataset
+      def has_field?(field_name)
+        direct_fields = self.fields
+        foreigns.each do |f|
+          foreign_dataset = self.class.dataset_from f
+          if foreign_dataset
+            direct_fields.concat foreign_dataset.fields
+          end
+        end
+        direct_fields.include? field_name
+      end
+
+
+      # The descendant class SHOULD override this method, in future versions of MSFL it is execpted to
+      # become a MUST for descendants to override.
+      #
+      # The method defines an array of symbols, indicating the names of foreign datasets that this data
+      # set supports filtering on
+      #
+      # Example a Person might have a foreign of :location where the Location dataset should be loaded and
+      # used for evaluating filters inside of the foreign (this prevents having to duplicate expression semantics
+      # across many datasets - the Location semantics are defined only in the Location dataset and loaded in
+      # when needed by other datasets)
+      def foreigns
+        []
+      end
+
       # The descendant class may override this method to control the operators that are supported for the dataset
       #  - Note that this can only be used to reduce the number of supported operators (you can't add new operators
       #    here, without first adding them to MSFL::Validators::Definitions::HashKey#hash_key_operators)
@@ -57,6 +98,21 @@ module MSFL
       # @return [Array<Symbol>] the operators supported in the dataset
       def operators
         hash_key_operators
+      end
+
+      # If the dataset supports the operator this method returns true
+      #
+      # @param operator [Symbol] the operator to check if the dataset supports it
+      # @return [Bool] true if the dataset supports the operator
+      def has_operator?(operator)
+        ops = operators
+        foreigns.each do |f|
+          foreign_dataset = self.class.dataset_from f
+          if foreign_dataset
+            ops.concat foreign_dataset.operators
+          end
+        end
+        ops.include? operator
       end
 
       # This method returns the errors argument. The errors argument is unchanged if type conformity validation passes,

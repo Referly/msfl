@@ -34,6 +34,27 @@ describe "MSFL::Parsers::JSON" do
       it { is_expected.to be_a MSFL::Types::Set }
     end
 
+    context "when parsing a foreign" do
+
+      # The test scenario here is if we are limiting the set of cars by person criteria (only cars owned by people over 25)
+
+      let(:test_json) { '{"foreign":{"dataset":"person","filter":{"age":{"gte":25}}}}' }
+
+      it "is an equivalent Ruby hash" do
+        expect(mut).to eq({foreign: { dataset: "person", filter: { age: { gte: 25 } } } })
+      end
+
+    end
+
+    context "when parsing a partial" do
+
+      let(:test_json) { '{"partial":{"given":{"make":"Toyota"},"filter":{"avg_age":10}}}'}
+
+      it "is an equivalent Ruby Hash" do
+        expect(mut).to eq({ partial: { given: { make: "Toyota" }, filter: { avg_age: 10 } } })
+      end
+    end
+
   end
 
   describe ".arrays_to_sets" do

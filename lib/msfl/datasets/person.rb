@@ -4,15 +4,15 @@ module MSFL
   module Datasets
     # This is a fake dataset definition that shows the structure for composing your own and is used for testing
     #  msfl
-    class Car < ::MSFL::Datasets::Base
+    class Person < ::MSFL::Datasets::Base
       register_dataset
 
       def foreigns
-        [:person]
+        [:car, :animal]
       end
 
       def fields
-        [:make, :model, :year, :value]
+        [:name, :gender, :age]
       end
     end
   end
