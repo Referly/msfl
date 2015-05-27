@@ -65,7 +65,6 @@ module MSFL
       #
       # @param field_name [Symbol] the name of the field to check and see if the dataset supports it
       # @return [Bool] true if the field is supported by the dataset
-      # @todo write direct test of this
       def has_field?(field_name)
         direct_fields = self.fields
         foreigns.each do |f|

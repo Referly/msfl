@@ -26,6 +26,37 @@ describe "MSFL::Datasets::Base" do
     end
   end
 
+  describe "#has_field?" do
+
+    let(:test_instance) { MSFL::Datasets::Car.new }
+
+    let(:field_name) { :make }
+
+    subject { test_instance.has_field? field_name }
+
+    context "when the dataset has the specified field" do
+
+      it { is_expected.to eq true }
+    end
+
+    context "when the dataset has a foreign data set that has the specified field" do
+
+      let(:field_name) { :gender }
+
+      it { is_expected.to eq true }
+    end
+
+    context "when the dataset does not have the specified field" do
+
+      context "when none of the dataset's foreign datasets have the specified field" do
+
+        let(:field_name) { :not_a_field }
+
+        it { is_expected.to eq false }
+      end
+    end
+  end
+
   describe "#type_conforms?" do
 
     context "when MSFL is configured to use Movie as the dataset" do
