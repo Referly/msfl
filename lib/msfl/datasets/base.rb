@@ -104,7 +104,6 @@ module MSFL
       #
       # @param operator [Symbol] the operator to check if the dataset supports it
       # @return [Bool] true if the dataset supports the operator
-      # @todo write test of this guy
       def has_operator?(operator)
         ops = operators
         foreigns.each do |f|

@@ -26,6 +26,37 @@ describe "MSFL::Datasets::Base" do
     end
   end
 
+  describe "#has_operator?" do
+
+    let(:test_instance) { MSFL::Datasets::Person.new }
+
+    let(:operator) { :eq }
+
+    subject { test_instance.has_operator? operator }
+
+    context "when the dataset has the specified operator" do
+
+      it { is_expected.to eq true }
+    end
+
+    context "when the dataset does not have the specified operator" do
+
+      context "when the dataset has a foreign dataset that has the specified operator" do
+
+        let(:operator) { :animal_specific_operator }
+
+        it { is_expected.to eq true }
+      end
+
+      context "when the dataset does not have a foreign dataset that has the specified operator" do
+
+        let(:operator) { :not_an_operator }
+
+        it { is_expected.to eq false }
+      end
+    end
+  end
+
   describe "#has_field?" do
 
     let(:test_instance) { MSFL::Datasets::Car.new }
