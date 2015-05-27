@@ -102,49 +102,9 @@ module MSFL
       #
       # @param obj [Object] the Hash that is an implicit and
       # @return [Hash] the resulting explicit hash
-      # @todo clean up the if elsif train
       def implicit_and_to_explicit_recursively(obj, parent_key = nil)
         if obj.is_a? Hash
-          first_key = obj.keys.first
-          if binary_operators.include?(first_key)
-            result = i_to_e_bin_op obj, parent_key
-          elsif logical_operators.include?(first_key)
-            result = i_to_e_log_op obj, parent_key
-          elsif first_key == :partial
-            result = { partial: { given: implicit_and_to_explicit_recursively(obj[:partial][:given]),
-                                  filter: implicit_and_to_explicit_recursively(obj[:partial][:filter]) } }
-          elsif first_key == :foreign
-            result = { foreign: { dataset: implicit_and_to_explicit_recursively(obj[:foreign][:dataset]),
-                                  filter: implicit_and_to_explicit_recursively(obj[:foreign][:filter]) } }
-          else
-            # the first key is not an operator
-            # if there is only one key just assign the result of calling this method recursively on the value to the result for the key
-            if obj.keys.count == 1
-              if obj[first_key].is_a?(Hash)
-                result = implicit_and_to_explicit_recursively obj[first_key], first_key
-              elsif obj[first_key].is_a? MSFL::Types::Set
-                # When an implicit and occurs under an MSFL::Types::Set when the key for the value which is the set
-                # is not a binary or logical operator. This doesn't happen in known current cases.
-                # ex. => { foo: [ { bar: { gte: 1, lte: 5 } } ] }
-                result = Hash.new
-                result[first_key] = recurse_through_set :implicit_and_to_explicit_recursively, obj[first_key]
-              elsif obj[first_key].is_a? Array
-                raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
-              end
-            else
-              raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" if any_operators?(obj.keys)
-              # none of the keys are operators
-              and_array = []
-              obj.each do |k, v|
-                if v.is_a? Hash
-                  and_array << implicit_and_to_explicit_recursively(v, k)
-                else
-                  and_array << { k => v }
-                end
-              end
-              result = { and: MSFL::Types::Set.new(and_array) }
-            end
-          end
+          result = i_to_e_rec_hash obj, parent_key
         elsif obj.is_a? MSFL::Types::Set
           result = i_to_e_set obj, parent_key
         elsif obj.is_a? Array
@@ -154,6 +114,67 @@ module MSFL
       end
 
     private
+
+      # Convert a Hash containing an implicit AND to an explicit AND
+      # This is a helper method used by #implicit_and_to_explicit_recursively
+      #
+      # @param hash [Hash] the Hash to be converted
+      # @param parent_key [Symbol] the parent key of the hash to be converted, or nil if one does not exist
+      # @return [Hash] the resulting hash with implicit ANDs converted to explicit ones
+      def i_to_e_rec_hash(hash, parent_key = nil)
+        first_key = hash.keys.first
+        if operator? first_key
+          result = i_to_e_op hash, parent_key
+        else
+          # the first key is not an operator
+          # if there is only one key just assign the result of calling this method recursively on the value to the result for the key
+          if hash.keys.count == 1
+            if hash[first_key].is_a?(Hash)
+              result = implicit_and_to_explicit_recursively hash[first_key], first_key
+            elsif hash[first_key].is_a? MSFL::Types::Set
+              # When an implicit and occurs under an MSFL::Types::Set when the key for the value which is the set
+              # is not a binary or logical operator. This doesn't happen in known current cases.
+              # ex. => { foo: [ { bar: { gte: 1, lte: 5 } } ] }
+              result = Hash.new
+              result[first_key] = recurse_through_set :implicit_and_to_explicit_recursively, hash[first_key]
+            elsif hash[first_key].is_a? Array
+              raise ArgumentError, "#implicit_and_to_explicit requires that it does not contain any Arrays - its argument should preprocessed by .arrays_to_sets and .convert_keys_to_symbols"
+            end
+          else
+            raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be operators" if any_operators?(hash.keys)
+            # none of the keys are operators
+            and_array = []
+            hash.each do |k, v|
+              if v.is_a? Hash
+                and_array << implicit_and_to_explicit_recursively(v, k)
+              else
+                and_array << { k => v }
+              end
+            end
+            result = { and: MSFL::Types::Set.new(and_array) }
+          end
+        end
+        result
+      end
+
+      def i_to_e_op(hash, parent_key = nil)
+        op_key = hash.keys.first
+
+        if binary_operators.include?(op_key)
+          i_to_e_bin_op hash, parent_key
+        elsif logical_operators.include?(op_key)
+          i_to_e_log_op hash, parent_key
+        elsif op_key == :partial
+          { partial: { given: implicit_and_to_explicit_recursively(hash[:partial][:given]),
+                       filter: implicit_and_to_explicit_recursively(hash[:partial][:filter]) } }
+        elsif op_key == :foreign
+          { foreign: { dataset: implicit_and_to_explicit_recursively(hash[:foreign][:dataset]),
+                       filter: implicit_and_to_explicit_recursively(hash[:foreign][:filter]) } }
+        else
+          fail ArgumentError, "Unsupported hash in private method #i_to_e_rec_hash_op_key"
+        end
+      end
+
       # Recursively handle a hash containing keys that are all logical operators
       def i_to_e_log_op(hash, parent_key = nil)
         raise ArgumentError, "#implicit_and_to_explicit requires that all or none of a hash's keys be logical operators" unless all_logical_operators?(hash.keys)

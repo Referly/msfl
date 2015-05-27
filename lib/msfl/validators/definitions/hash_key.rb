@@ -53,6 +53,14 @@ module MSFL
           [:and, :or]
         end
 
+        # Returns true if the argument is a valid operator
+        #
+        # @param symbol [Symbol] the value to check to see if it is an operator
+        # @return [Bool] true if the argument is a valid operator, false otherwise
+        def operator?(symbol)
+          hash_key_operators.include? symbol
+        end
+
         # Returns true if all elements of arr are operators, false otherwise
         #
         # @param arr [Array<Symbol>] the Array of Symbols to be checked against the operators list
