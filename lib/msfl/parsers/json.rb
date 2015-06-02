@@ -21,17 +21,18 @@ module MSFL
       # @param obj [Object] the object in which to convert Ruby Array objects to MSFL::Types::Set objects
       # @return [Object] the result of converting Ruby Arrays to MSFL::Types::Set objects
       def self.arrays_to_sets(obj)
-        obj = Types::Set.new obj if obj.is_a?(::Array)
-        if obj.respond_to? :each
-          if obj.is_a?(::Hash)
-            result = {}
-            obj.each { |key, val| result["#{key}".to_sym] = arrays_to_sets val }
-          elsif obj.is_a?(Types::Set)
-            result = Types::Set.new obj.map { |value| arrays_to_sets value }
+        case obj
+        when Array
+          arrays_to_sets(Types::Set.new obj)
+        when Hash
+          obj.each_with_object({}) do |(key, val), hash|
+            hash[:"#{key}"] = arrays_to_sets val
           end
+        when Types::Set
+          Types::Set.new obj.map { |value| arrays_to_sets value }
+        else
+          obj
         end
-        result ||= obj
-        result
       end
 
       # Deeply converts all hash keys to symbols
@@ -39,22 +40,21 @@ module MSFL
       # @param obj [Object] the object on which to deeply convert hash keys to symbols
       # @return [Object] the object with its hash keys deeply converted to symbols
       def self.convert_keys_to_symbols(obj)
-        result = obj
-        if obj.is_a? Hash
-          result = Hash.new
-          obj.each do |k, v|
-            value = convert_keys_to_symbols v
-            result["#{k}".to_sym] = value
+        case obj
+        when Hash
+          obj.each_with_object({}) do |(k,v), hash|
+            hash[:"#{k}"] = convert_keys_to_symbols(v)
           end
-        elsif obj.is_a? Types::Set
-          result = Types::Set.new
-          obj.each do |v|
-            result << convert_keys_to_symbols(v)
+        when Types::Set
+          obj.each_with_object(Types::Set.new) do |item, set|
+            set << convert_keys_to_symbols(item)
           end
-        elsif obj.is_a? Array # Generally this will not be the case as the expectation is that arrays_to_sets has already run
-          result = convert_keys_to_symbols(arrays_to_sets(obj))
+        when Array
+          # Generally this will not be the case as the expectation is that arrays_to_sets has already run
+          convert_keys_to_symbols(arrays_to_sets(obj))
+        else
+          obj
         end
-        result
       end
     end
   end
